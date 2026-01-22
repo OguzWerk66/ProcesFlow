@@ -1,0 +1,337 @@
+{
+  "nodes": [
+    {
+      "id": "LID-001",
+      "titel": "Regulier bestandsbeheer",
+      "korteBeschrijving": "Doorlopend onderhoud van ledengegevens",
+      "klantreisStatus": "lid",
+      "procesFase": "lopend-lidmaatschap",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Onderhoudt ledenbestand" },
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "A", "toelichting": "Bewaakt datakwaliteit" }
+      ],
+      "trigger": "Doorlopend / wijzigingsverzoeken van leden",
+      "inputs": [
+        "Wijzigingsverzoeken via mail/telefoon/portaal",
+        "Signalen van andere afdelingen"
+      ],
+      "acties": [
+        "Verwerk adreswijzigingen",
+        "Verwerk contactpersoon wijzigingen",
+        "Controleer periodiek KvK-gegevens",
+        "Houd overzicht van leden per regio/gilde actueel"
+      ],
+      "outputs": [
+        "Actuele ledengegevens in Salesforce"
+      ],
+      "handovers": [
+        {
+          "naarNode": "WIJZ-001",
+          "conditie": "Wijziging heeft impact op contributie of gilden",
+          "overdracht": "Wijzigingsverzoek voor verdere verwerking"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Wijzigingen doorvoeren", "veld": "Account/Contact", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["bestandsbeheer", "gegevensonderhoud"]
+    },
+    {
+      "id": "WIJZ-001",
+      "titel": "Wijziging vestiging toevoegen",
+      "korteBeschrijving": "Toevoegen van extra vestiging aan bestaand lidmaatschap",
+      "klantreisStatus": "lid",
+      "procesFase": "wijzigingen",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Verwerkt vestiging toevoeging" },
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "I", "toelichting": "Wordt geïnformeerd voor contributie-impact" }
+      ],
+      "trigger": "Lid meldt nieuwe vestiging",
+      "inputs": [
+        "Vestigingsgegevens (adres, contactpersoon)",
+        "KvK-uittreksel met nieuwe vestiging"
+      ],
+      "acties": [
+        "Controleer KvK-registratie nieuwe vestiging",
+        "Voeg vestiging toe aan account in Salesforce",
+        "Bereken contributie-impact (indien staffel op vestigingen)",
+        "Verstuur bevestiging aan lid"
+      ],
+      "outputs": [
+        "Vestiging toegevoegd",
+        "Eventueel: aanvullende contributienota"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 3 werkdagen",
+        "maximum": "5 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-002",
+          "conditie": "Contributie-impact aanwezig",
+          "overdracht": "Wijziging voor aanvullende facturatie"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Vestiging toevoegen", "veld": "Account - Locations", "verplicht": true },
+        { "systeem": "email", "actie": "Bevestiging versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3 lid 4",
+          "omschrijving": "Contributie bij meerdere vestigingen"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["vestiging", "wijziging", "contributie"]
+    },
+    {
+      "id": "WIJZ-002",
+      "titel": "Extra gildelid toevoegen",
+      "korteBeschrijving": "Toevoegen van nieuw gildelid aan bestaand lidmaatschap",
+      "klantreisStatus": "lid",
+      "procesFase": "wijzigingen",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Verwerkt gildelid toevoeging" },
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "C", "toelichting": "Controleert toelatingseisen" },
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "I", "toelichting": "Voor contributie-impact" }
+      ],
+      "trigger": "Lid meldt nieuwe medewerker voor gilde",
+      "inputs": [
+        "Gegevens nieuwe gildelid",
+        "Diploma's / bewijsstukken vakbekwaamheid"
+      ],
+      "acties": [
+        "Controleer of persoon aan toelatingseisen gilde voldoet",
+        "Voeg gildelid toe aan account",
+        "Maak PE-portaal account aan",
+        "Bereken contributie-impact (gildelid-toeslag)",
+        "Verstuur welkomstinformatie aan gildelid"
+      ],
+      "outputs": [
+        "Gildelid toegevoegd",
+        "PE-account aangemaakt",
+        "Aanvullende contributienota indien van toepassing"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "ACT-004",
+          "overdracht": "Gildelid voor activatie en PE-setup"
+        },
+        {
+          "naarNode": "CONTR-002",
+          "conditie": "Contributie-impact aanwezig",
+          "overdracht": "Voor aanvullende facturatie"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "WIJZ-002-U1",
+          "conditie": "Kandidaat voldoet niet aan toelatingseisen",
+          "actie": "Informeer lid over ontbrekende vereisten",
+          "verantwoordelijke": "ambtelijk-secretaris"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Gildelid toevoegen", "veld": "Contact + Guild Membership", "verplicht": true },
+        { "systeem": "pe-portaal", "actie": "Account aanmaken", "verplicht": true },
+        { "systeem": "email", "actie": "Welkomstmail versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 4",
+          "omschrijving": "Toelatingseisen gildeleden"
+        },
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3 lid 5",
+          "omschrijving": "Contributie gildeleden"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["gildelid", "toevoegen", "wijziging"]
+    },
+    {
+      "id": "WIJZ-003",
+      "titel": "Extra gilde toevoegen",
+      "korteBeschrijving": "Toevoegen van lidmaatschap bij extra gilde",
+      "klantreisStatus": "lid",
+      "procesFase": "wijzigingen",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Verwerkt gilde toevoeging" },
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "C", "toelichting": "Beoordeelt geschiktheid" }
+      ],
+      "trigger": "Lid wil aansluiten bij extra gilde",
+      "inputs": [
+        "Verzoek lid met motivatie",
+        "Gegevens gildeleden voor nieuw gilde"
+      ],
+      "acties": [
+        "Toets of lid/gildeleden aan eisen nieuw gilde voldoen",
+        "Voeg gildelidmaatschap toe",
+        "Bereken contributie-impact",
+        "Update PE-verplichtingen voor betreffende gildeleden",
+        "Informeer lid over gilde-specifieke zaken"
+      ],
+      "outputs": [
+        "Gilde lidmaatschap toegevoegd",
+        "Aangepaste contributie"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen",
+        "maximum": "15 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-002",
+          "overdracht": "Voor aanvullende facturatie"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "WIJZ-003-U1",
+          "conditie": "Lid voldoet niet aan eisen nieuw gilde",
+          "actie": "Bespreek alternatieven of afwijzen",
+          "verantwoordelijke": "senior-ledenadministrateur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Gilde toevoegen", "veld": "Account - Guilds", "verplicht": true },
+        { "systeem": "pe-portaal", "actie": "PE-eisen bijwerken", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 6 lid 3",
+          "omschrijving": "Lidmaatschap meerdere gilden"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "senior-ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["gilde", "uitbreiding", "wijziging"]
+    },
+    {
+      "id": "WIJZ-004",
+      "titel": "Statuswijziging lid",
+      "korteBeschrijving": "Verwerken van wijzigingen in bedrijfsstatus (fusie, overname, etc.)",
+      "klantreisStatus": "lid",
+      "procesFase": "wijzigingen",
+      "casusType": "uitzondering",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Coördineert statuswijziging" },
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "C", "toelichting": "Adviseert bij juridische consequenties" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "I", "toelichting": "Wordt geïnformeerd" }
+      ],
+      "trigger": "Signaal van lid of uit KvK-monitoring over fusie/overname/naamswijziging",
+      "inputs": [
+        "KvK-uittreksel met wijziging",
+        "Toelichting lid"
+      ],
+      "acties": [
+        "Analyseer impact op lidmaatschap",
+        "Bepaal of lidmaatschap door kan lopen of opnieuw beoordeeld moet worden",
+        "Verwerk administratieve wijzigingen",
+        "Informeer relevante afdelingen"
+      ],
+      "outputs": [
+        "Lidmaatschap aangepast of beëindiging gestart"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen",
+        "maximum": "20 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-001",
+          "conditie": "Lidmaatschap moet worden beëindigd",
+          "overdracht": "Lid record voor beëindigingsprocedure"
+        },
+        {
+          "naarNode": "ESC-003",
+          "conditie": "Juridische complexiteit",
+          "overdracht": "Casus voor juridische beoordeling"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "WIJZ-004-U1",
+          "conditie": "Overname door niet-lid met andere activiteiten",
+          "actie": "Beoordeel of overnemende partij aan lidmaatschapseisen voldoet",
+          "verantwoordelijke": "senior-ledenadministrateur",
+          "escaleertNaar": "ESC-003"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Wijzigingen vastleggen", "veld": "Account", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Documentatie archiveren", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 7",
+          "omschrijving": "Overgang lidmaatschap"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "senior-ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["statuswijziging", "fusie", "overname"]
+    }
+  ]
+}

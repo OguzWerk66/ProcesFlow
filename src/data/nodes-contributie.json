@@ -1,0 +1,400 @@
+{
+  "nodes": [
+    {
+      "id": "CONTR-001",
+      "titel": "Jaarcontributie facturatie",
+      "korteBeschrijving": "Jaarlijkse facturatie van contributie aan alle leden",
+      "klantreisStatus": "lid",
+      "procesFase": "contributie",
+      "casusType": "standaard",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "R", "toelichting": "Voert facturatierun uit" },
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "C", "toelichting": "Levert actuele ledengegevens" },
+        { "rol": "credit-controller", "afdeling": "finance", "type": "A", "toelichting": "Eindverantwoordelijk voor debiteurenbeheer" }
+      ],
+      "trigger": "Jaarlijks in januari (of bij ALV-besluit) / bij activatie nieuw lid",
+      "inputs": [
+        "Actueel ledenbestand met gilden en vestigingen",
+        "Contributiestaffels (vastgesteld door ALV)",
+        "Indexatiepercentage indien van toepassing"
+      ],
+      "acties": [
+        "Genereer contributiefacturen op basis van staffel",
+        "Pas pro-rata berekening toe voor nieuwe leden (lidmaatschap gestart na 1 juli: 50%)",
+        "Verstuur facturen per email met betalingstermijn 30 dagen",
+        "Registreer openstaande posten in Exact"
+      ],
+      "outputs": [
+        "Contributiefacturen verzonden",
+        "Openstaande posten in boekhouding"
+      ],
+      "doorlooptijd": {
+        "standaard": "Jaarfacturatie: binnen 2 weken in januari",
+        "maximum": "Eind januari"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-003",
+          "conditie": "Betaling niet ontvangen binnen termijn",
+          "overdracht": "Openstaande factuur voor herinnering"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "CONTR-001-U1",
+          "conditie": "Lid heeft lopende betalingsregeling",
+          "actie": "Pas facturatie aan conform regeling",
+          "verantwoordelijke": "credit-controller"
+        },
+        {
+          "id": "CONTR-001-U2",
+          "conditie": "Lid heeft bezwaar tegen contributiehoogte",
+          "actie": "Doorverwijzen naar escalatie Finance/Legal",
+          "verantwoordelijke": "financieel-medewerker",
+          "escaleertNaar": "ESC-004"
+        }
+      ],
+      "registraties": [
+        { "systeem": "exact", "actie": "Factuur aanmaken en boeken", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Facturatiestatus bijwerken", "veld": "Billing Status", "verplicht": true },
+        { "systeem": "email", "actie": "Factuur versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3 lid 1-3",
+          "omschrijving": "Contributiestructuur en staffels"
+        },
+        {
+          "document": "ALV Besluit",
+          "artikel": "Jaarlijks",
+          "omschrijving": "Vaststelling contributiebedragen"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "financieel-medewerker",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["contributie", "facturatie", "jaarlijks"]
+    },
+    {
+      "id": "CONTR-002",
+      "titel": "Tussentijdse facturatie",
+      "korteBeschrijving": "Facturatie bij wijzigingen die impact hebben op contributie",
+      "klantreisStatus": "lid",
+      "procesFase": "contributie",
+      "casusType": "standaard",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "R", "toelichting": "Maakt tussentijdse factuur" },
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "C", "toelichting": "Levert wijzigingsgegevens" }
+      ],
+      "trigger": "Wijziging in vestigingen, gilden of gildeleden met contributie-impact",
+      "inputs": [
+        "Wijzigingsgegevens",
+        "Actuele contributiestaffels"
+      ],
+      "acties": [
+        "Bereken aanvullende contributie pro rata voor resterende periode",
+        "Maak aanvullende factuur aan",
+        "Verstuur factuur met toelichting berekening"
+      ],
+      "outputs": [
+        "Aanvullende contributienota verzonden"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen na wijziging",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-003",
+          "conditie": "Betaling niet ontvangen binnen termijn",
+          "overdracht": "Openstaande factuur voor herinnering"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "exact", "actie": "Factuur aanmaken", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Koppelen aan wijziging", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3 lid 6",
+          "omschrijving": "Tussentijdse contributiewijzigingen"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "financieel-medewerker",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["contributie", "tussentijds", "wijziging"]
+    },
+    {
+      "id": "CONTR-003",
+      "titel": "Eerste betalingsherinnering",
+      "korteBeschrijving": "Herinnering bij niet-betaling binnen termijn",
+      "klantreisStatus": "lid",
+      "procesFase": "contributie",
+      "casusType": "standaard",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "R", "toelichting": "Verstuurt herinnering" },
+        { "rol": "credit-controller", "afdeling": "finance", "type": "A", "toelichting": "Monitort betalingsgedrag" }
+      ],
+      "trigger": "Betalingstermijn (30 dagen) verstreken",
+      "inputs": [
+        "Openstaande factuur"
+      ],
+      "acties": [
+        "Verstuur eerste herinnering per email",
+        "Geef nieuwe betalingstermijn van 14 dagen",
+        "Log herinnering in systeem"
+      ],
+      "outputs": [
+        "Eerste herinnering verzonden"
+      ],
+      "doorlooptijd": {
+        "standaard": "Automatisch na 30 dagen",
+        "maximum": "35 dagen na factuurdatum"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-004",
+          "conditie": "Nog geen betaling na 14 dagen",
+          "overdracht": "Openstaande factuur voor tweede herinnering"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "CONTR-003-U1",
+          "conditie": "Lid meldt betalingsprobleem",
+          "actie": "Bespreek betalingsregeling",
+          "verantwoordelijke": "credit-controller"
+        }
+      ],
+      "registraties": [
+        { "systeem": "exact", "actie": "Herinnering loggen", "verplicht": true },
+        { "systeem": "email", "actie": "Herinnering versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "financieel-medewerker",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["betaling", "herinnering", "incasso"]
+    },
+    {
+      "id": "CONTR-004",
+      "titel": "Tweede herinnering / aanmaning",
+      "korteBeschrijving": "Formele aanmaning bij aanhoudende non-betaling",
+      "klantreisStatus": "lid",
+      "procesFase": "contributie",
+      "casusType": "standaard",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "credit-controller", "afdeling": "finance", "type": "R", "toelichting": "Verstuurt aanmaning" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "I", "toelichting": "Wordt geïnformeerd" }
+      ],
+      "trigger": "Geen betaling na eerste herinnering",
+      "inputs": [
+        "Openstaande factuur met herinneringshistorie"
+      ],
+      "acties": [
+        "Verstuur formele aanmaning per aangetekende post",
+        "Informeer dat verdere maatregelen volgen bij uitblijven betaling",
+        "Informeer regiomanager over situatie",
+        "Geef laatste betalingstermijn van 14 dagen"
+      ],
+      "outputs": [
+        "Aanmaning verzonden",
+        "Regiomanager geïnformeerd"
+      ],
+      "doorlooptijd": {
+        "standaard": "14 dagen na eerste herinnering",
+        "maximum": "20 dagen na eerste herinnering"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-005",
+          "conditie": "Nog geen betaling na 14 dagen",
+          "overdracht": "Dossier voor incasso/schorsing procedure"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "exact", "actie": "Aanmaning loggen", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Alert voor regiomanager", "veld": "Task", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "credit-controller",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["aanmaning", "incasso", "wanbetaling"]
+    },
+    {
+      "id": "CONTR-005",
+      "titel": "Incassoprocedure / schorsing",
+      "korteBeschrijving": "Escalatie bij aanhoudende wanbetaling",
+      "klantreisStatus": "lid",
+      "procesFase": "contributie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "credit-controller", "afdeling": "finance", "type": "R", "toelichting": "Coördineert incasso" },
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "C", "toelichting": "Adviseert over juridische stappen" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Accordeert schorsing" }
+      ],
+      "trigger": "Geen betaling na tweede aanmaning",
+      "inputs": [
+        "Volledig betalingsdossier"
+      ],
+      "acties": [
+        "Overleg met Legal over incasso-opties",
+        "Bereid schorsingsbrief voor",
+        "Leg schorsingsvoorstel voor aan directeur",
+        "Bij akkoord: verstuur schorsingsbrief en schakel incassobureau in",
+        "Schors lidrechten (geen deelname evenementen, geen vermelding website)"
+      ],
+      "outputs": [
+        "Schorsing geëffectueerd OF betalingsregeling getroffen",
+        "Incassoprocedure gestart"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen na deadline aanmaning",
+        "maximum": "15 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-003",
+          "conditie": "Lid blijft in gebreke na incasso",
+          "overdracht": "Dossier voor ontzetting"
+        },
+        {
+          "naarNode": "LID-001",
+          "conditie": "Betalingsregeling getroffen en nagekomen",
+          "overdracht": "Lid terug in regulier beheer"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Geschorst", "veld": "Account Status", "verplicht": true },
+        { "systeem": "exact", "actie": "Incassodossier aanmaken", "verplicht": true },
+        { "systeem": "website", "actie": "Vermelding verwijderen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 4",
+          "omschrijving": "Schorsing bij wanbetaling"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 8 lid 3",
+          "omschrijving": "Schorsing lidmaatschapsrechten"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "credit-controller",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["incasso", "schorsing", "wanbetaling", "escalatie"]
+    },
+    {
+      "id": "CONTR-006",
+      "titel": "Jaarlijkse indexatie",
+      "korteBeschrijving": "Doorvoeren van indexatie op contributietarieven",
+      "klantreisStatus": "lid",
+      "procesFase": "contributie",
+      "casusType": "standaard",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "R", "toelichting": "Berekent indexatie" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Stelt indexatie vast" },
+        { "rol": "communicatieadviseur", "afdeling": "marcom", "type": "I", "toelichting": "Communiceert naar leden" }
+      ],
+      "trigger": "Jaarlijks in Q4 ter voorbereiding op nieuw jaar",
+      "inputs": [
+        "CBS prijsindexcijfers",
+        "ALV-besluiten over indexatiemethodiek"
+      ],
+      "acties": [
+        "Bereken indexatiepercentage conform afgesproken methodiek",
+        "Pas contributiestaffels aan voor nieuw jaar",
+        "Informeer leden over nieuwe tarieven (minimaal 2 maanden voor ingangsdatum)",
+        "Update systemen met nieuwe tarieven"
+      ],
+      "outputs": [
+        "Nieuwe contributiestaffels vastgesteld",
+        "Leden geïnformeerd"
+      ],
+      "doorlooptijd": {
+        "standaard": "Afgerond voor 1 november",
+        "maximum": "1 december"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-001",
+          "overdracht": "Nieuwe staffels voor jaarfacturatie"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "CONTR-006-U1",
+          "conditie": "Uitzonderlijk hoge inflatie",
+          "actie": "Voorleggen aan bestuur/ALV voor afwijkend besluit",
+          "verantwoordelijke": "directeur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "exact", "actie": "Nieuwe tarieven invoeren", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Contributiestaffels bijwerken", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3 lid 7",
+          "omschrijving": "Indexatieclausule contributie"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "financieel-medewerker",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["indexatie", "tarieven", "jaarlijks"]
+    }
+  ]
+}

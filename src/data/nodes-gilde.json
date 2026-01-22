@@ -1,0 +1,368 @@
+{
+  "nodes": [
+    {
+      "id": "GILDE-001",
+      "titel": "Gilde-informatie verstrekken",
+      "korteBeschrijving": "Informatieverstrekking over specifiek gilde aan prospects/leden",
+      "klantreisStatus": "prospect",
+      "procesFase": "intake",
+      "casusType": "standaard",
+      "primaireAfdeling": "gilde-organisatie",
+      "raci": [
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "R", "toelichting": "Verstrekt gilde-specifieke informatie" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "C", "toelichting": "Koppelt terug naar prospect" }
+      ],
+      "trigger": "Vraag vanuit Sales of prospect/lid over specifiek gilde",
+      "inputs": [
+        "Vraag over gilde (toelatingseisen, PE, voordelen)"
+      ],
+      "acties": [
+        "Beantwoord vragen over toelatingseisen",
+        "Leg PE-verplichtingen uit",
+        "Informeer over gilde-activiteiten en voordelen",
+        "Verwijs eventueel door naar gilderaad voor specialistische vragen"
+      ],
+      "outputs": [
+        "Prospect/lid geïnformeerd over gilde"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 3 werkdagen",
+        "maximum": "5 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "LEAD-003",
+          "conditie": "Prospect wil adviesgesprek voortzetten",
+          "overdracht": "Terugkoppeling naar Sales"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Contact loggen", "veld": "Activity", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 1-5",
+          "omschrijving": "Algemene bepalingen gilde"
+        },
+        {
+          "document": "Reglement Gilde Taxateurs",
+          "artikel": "Art. 1-5",
+          "omschrijving": "Algemene bepalingen gilde"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ambtelijk-secretaris",
+        "eigenaarAfdeling": "gilde-organisatie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["gilde", "informatie", "intake"]
+    },
+    {
+      "id": "GILDE-002",
+      "titel": "PE-monitoring",
+      "korteBeschrijving": "Monitoren van permanente educatie verplichtingen gildeleden",
+      "klantreisStatus": "lid",
+      "procesFase": "gilde-beheer",
+      "casusType": "standaard",
+      "primaireAfdeling": "gilde-organisatie",
+      "raci": [
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "R", "toelichting": "Monitort PE-voortgang" },
+        { "rol": "opleidingscoordinator", "afdeling": "events-opleidingen", "type": "C", "toelichting": "Levert cursusaanbod" }
+      ],
+      "trigger": "Doorlopend / kwartaalrapportage PE-portaal",
+      "inputs": [
+        "PE-registraties uit PE-portaal",
+        "PE-eisen per gilde"
+      ],
+      "acties": [
+        "Controleer PE-voortgang per gildelid",
+        "Identificeer gildeleden met achterstand",
+        "Verstuur tussentijdse waarschuwingen bij achterstand",
+        "Wijs op relevant cursusaanbod"
+      ],
+      "outputs": [
+        "PE-status overzicht per gildelid",
+        "Waarschuwingen verstuurd waar nodig"
+      ],
+      "doorlooptijd": {
+        "standaard": "Kwartaalcyclus",
+        "maximum": "Elk kwartaal"
+      },
+      "handovers": [
+        {
+          "naarNode": "GILDE-003",
+          "conditie": "PE-verplichting niet gehaald aan einde jaar",
+          "overdracht": "Gildelid voor PE-tekort procedure"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "GILDE-002-U1",
+          "conditie": "Gildelid vraagt uitstel wegens bijzondere omstandigheden",
+          "actie": "Beoordeel verzoek, eventueel voorleggen aan gilderaad",
+          "verantwoordelijke": "ambtelijk-secretaris"
+        }
+      ],
+      "registraties": [
+        { "systeem": "pe-portaal", "actie": "PE-punten registreren/controleren", "verplicht": true },
+        { "systeem": "email", "actie": "Waarschuwingen versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 8",
+          "omschrijving": "PE-verplichtingen"
+        },
+        {
+          "document": "Reglement Gilde Taxateurs",
+          "artikel": "Art. 8",
+          "omschrijving": "PE-verplichtingen"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ambtelijk-secretaris",
+        "eigenaarAfdeling": "gilde-organisatie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["PE", "educatie", "monitoring"]
+    },
+    {
+      "id": "GILDE-003",
+      "titel": "PE-tekort afhandeling",
+      "korteBeschrijving": "Procedure bij niet halen PE-verplichting",
+      "klantreisStatus": "lid",
+      "procesFase": "gilde-beheer",
+      "casusType": "uitzondering",
+      "primaireAfdeling": "gilde-organisatie",
+      "raci": [
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "R", "toelichting": "Behandelt PE-tekort" },
+        { "rol": "gilderaad-voorzitter", "afdeling": "gilde-organisatie", "type": "A", "toelichting": "Besluit over consequenties" },
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "I", "toelichting": "Wordt geïnformeerd bij beëindiging" }
+      ],
+      "trigger": "PE-verplichting niet gehaald aan einde PE-periode",
+      "inputs": [
+        "PE-registratie met tekort",
+        "Eventuele eerdere waarschuwingen"
+      ],
+      "acties": [
+        "Stel formeel PE-tekort vast",
+        "Stuur kennisgeving aan gildelid met hersteltermijn (meestal 3 maanden)",
+        "Informeer lid (bedrijf) over situatie",
+        "Na hersteltermijn: beoordeel of tekort is aangevuld"
+      ],
+      "outputs": [
+        "PE-tekort hersteld OF gildelidmaatschap beëindigd"
+      ],
+      "doorlooptijd": {
+        "standaard": "3 maanden hersteltermijn",
+        "maximum": "6 maanden bij bijzondere omstandigheden"
+      },
+      "handovers": [
+        {
+          "naarNode": "GILDE-004",
+          "conditie": "PE-tekort niet hersteld binnen termijn",
+          "overdracht": "Gildelid voor beëindiging gildelidmaatschap"
+        },
+        {
+          "naarNode": "GILDE-002",
+          "conditie": "PE-tekort hersteld",
+          "overdracht": "Gildelid terug in reguliere monitoring"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "GILDE-003-U1",
+          "conditie": "Langdurige ziekte of andere overmacht",
+          "actie": "Voorleggen aan gilderaad voor coulance-besluit",
+          "verantwoordelijke": "ambtelijk-secretaris"
+        }
+      ],
+      "registraties": [
+        { "systeem": "pe-portaal", "actie": "PE-tekort registreren", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Status gildelid bijwerken", "veld": "Guild Membership Status", "verplicht": true },
+        { "systeem": "email", "actie": "Kennisgevingen versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 9",
+          "omschrijving": "Sancties bij PE-tekort"
+        },
+        {
+          "document": "Reglement Gilde Taxateurs",
+          "artikel": "Art. 9",
+          "omschrijving": "Sancties bij PE-tekort"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ambtelijk-secretaris",
+        "eigenaarAfdeling": "gilde-organisatie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["PE", "tekort", "sanctie"]
+    },
+    {
+      "id": "GILDE-004",
+      "titel": "Beëindiging gildelidmaatschap",
+      "korteBeschrijving": "Beëindigen van individueel gildelidmaatschap",
+      "klantreisStatus": "lid",
+      "procesFase": "gilde-beheer",
+      "casusType": "uitzondering",
+      "primaireAfdeling": "gilde-organisatie",
+      "raci": [
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "R", "toelichting": "Verwerkt beëindiging" },
+        { "rol": "gilderaad-voorzitter", "afdeling": "gilde-organisatie", "type": "A", "toelichting": "Accordeert beëindiging" },
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "I", "toelichting": "Verwerkt in ledenadministratie" }
+      ],
+      "trigger": "PE-tekort niet hersteld / verzoek lid / tuchtrechtelijke maatregel",
+      "inputs": [
+        "Dossier met reden beëindiging",
+        "Besluit gilderaad indien vereist"
+      ],
+      "acties": [
+        "Formaliseer beëindiging gildelidmaatschap",
+        "Deactiveer PE-portaal account",
+        "Verstuur beëindigingsbrief aan gildelid en lid",
+        "Update ledenadministratie",
+        "Verwijder van gilde-mailinglijsten",
+        "Herbereken contributie indien van toepassing"
+      ],
+      "outputs": [
+        "Gildelidmaatschap beëindigd",
+        "Alle systemen bijgewerkt"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen na besluit",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "LID-001",
+          "conditie": "Lid heeft nog andere gildeleden",
+          "overdracht": "Lid record voor aangepast beheer"
+        },
+        {
+          "naarNode": "BEEIN-001",
+          "conditie": "Laatste gildelid en lid wil opzeggen",
+          "overdracht": "Lid record voor beëindiging lidmaatschap"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "GILDE-004-U1",
+          "conditie": "Gildelid tekent beroep aan",
+          "actie": "Schors beëindiging, start beroepsprocedure",
+          "verantwoordelijke": "ambtelijk-secretaris",
+          "escaleertNaar": "BEEIN-007"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Gildelidmaatschap beëindigen", "veld": "Guild Membership", "verplicht": true },
+        { "systeem": "pe-portaal", "actie": "Account deactiveren", "verplicht": true },
+        { "systeem": "email", "actie": "Beëindigingsbrief versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 10",
+          "omschrijving": "Beëindiging gildelidmaatschap"
+        },
+        {
+          "document": "Reglement Gilde Taxateurs",
+          "artikel": "Art. 10",
+          "omschrijving": "Beëindiging gildelidmaatschap"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ambtelijk-secretaris",
+        "eigenaarAfdeling": "gilde-organisatie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["gildelid", "beëindiging", "PE"]
+    },
+    {
+      "id": "GILDE-005",
+      "titel": "Kandidaat-gildelid beoordeling",
+      "korteBeschrijving": "Beoordeling van kandidaten die nog niet aan alle eisen voldoen",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "gilde-beheer",
+      "casusType": "standaard",
+      "primaireAfdeling": "gilde-organisatie",
+      "raci": [
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "R", "toelichting": "Beoordeelt kandidaat" },
+        { "rol": "gilderaad-voorzitter", "afdeling": "gilde-organisatie", "type": "C", "toelichting": "Adviseert bij twijfelgevallen" }
+      ],
+      "trigger": "Aanvraag voor gildelidmaatschap waarbij kandidaat nog niet volledig voldoet",
+      "inputs": [
+        "Gegevens kandidaat",
+        "Huidige diploma's/certificaten",
+        "Plan voor het behalen van ontbrekende kwalificaties"
+      ],
+      "acties": [
+        "Beoordeel huidige kwalificaties",
+        "Bepaal welke aanvullende eisen moeten worden gehaald",
+        "Stel indien mogelijk kandidaat-status voor met tijdpad",
+        "Leg afspraken vast over termijn en tussentijdse toetsing"
+      ],
+      "outputs": [
+        "Kandidaat toegelaten met voorwaarden OF afgewezen"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen",
+        "maximum": "15 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "ACT-004",
+          "conditie": "Kandidaat geaccepteerd",
+          "overdracht": "Kandidaat-gildelid voor activatie met voorwaarden"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Kandidaat-status registreren", "veld": "Guild Membership - Candidate", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Beoordelingsdocumenten archiveren", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 5",
+          "omschrijving": "Kandidaat-lidmaatschap"
+        },
+        {
+          "document": "Reglement Gilde Taxateurs",
+          "artikel": "Art. 5",
+          "omschrijving": "Kandidaat-lidmaatschap"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ambtelijk-secretaris",
+        "eigenaarAfdeling": "gilde-organisatie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["kandidaat", "beoordeling", "voorwaardelijk"]
+    }
+  ]
+}

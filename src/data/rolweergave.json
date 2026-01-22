@@ -1,0 +1,661 @@
+{
+  "rolweergaven": [
+    {
+      "rol": "regiomanager",
+      "afdeling": "sales",
+      "beschrijving": "Verantwoordelijk voor ledenaquisitie en relatiebeheer in toegewezen regio",
+      "taken": [
+        {
+          "nodeId": "LEAD-002",
+          "nodeTitel": "Eerste contact / kwalificatie",
+          "raciType": "R",
+          "procesFase": "leadgeneratie",
+          "triggers": ["Nieuwe lead toegewezen in Salesforce"],
+          "acties": ["Telefonisch contact opnemen", "Kwalificatievragen stellen", "Afspraak inplannen"],
+          "handovers": ["Prospect naar adviesgesprek", "Lead naar afsluiting"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "LEAD-003",
+          "nodeTitel": "Adviesgesprek",
+          "raciType": "R",
+          "procesFase": "intake",
+          "triggers": ["Afspraak ingepland na kwalificatie"],
+          "acties": ["Adviesgesprek voeren", "Gilden toelichten", "Aanvraagformulier verstrekken"],
+          "handovers": ["Aanvraag naar Ledenadministratie", "Follow-up bij twijfel"],
+          "escalaties": ["Gilde-organisatie inschakelen voor specifieke info"]
+        },
+        {
+          "nodeId": "LEAD-004",
+          "nodeTitel": "Follow-up prospect",
+          "raciType": "R",
+          "procesFase": "intake",
+          "triggers": ["Follow-up datum bereikt"],
+          "acties": ["Contact opnemen", "Vragen beantwoorden", "Interesse peilen"],
+          "handovers": ["Aanvraag of afsluiting"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ACT-003",
+          "nodeTitel": "Persoonlijke kennismaking",
+          "raciType": "R",
+          "procesFase": "onboarding",
+          "triggers": ["Lid geactiveerd"],
+          "acties": ["Kennismakingsgesprek plannen en voeren", "Verwachtingen bespreken", "Introduceren bij gilde"],
+          "handovers": ["Lid naar regulier beheer"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "BEEIN-006",
+          "nodeTitel": "Exit-gesprek",
+          "raciType": "R",
+          "procesFase": "beeindiging",
+          "triggers": ["Opzegging ontvangen"],
+          "acties": ["Exit-gesprek voeren", "Feedback registreren", "Retentie proberen"],
+          "handovers": ["Opzegging doorzetten of intrekken"],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Aantal nieuwe leden per kwartaal",
+        "Conversieratio lead naar lid",
+        "Retentiepercentage na exit-gesprek"
+      ]
+    },
+    {
+      "rol": "sales-binnendienst",
+      "afdeling": "sales",
+      "beschrijving": "Ondersteunt leadregistratie en administratieve saleswerkzaamheden",
+      "taken": [
+        {
+          "nodeId": "LEAD-001",
+          "nodeTitel": "Lead binnenkomst",
+          "raciType": "R",
+          "procesFase": "leadgeneratie",
+          "triggers": ["Nieuwe lead vanuit beurs, website, doorverwijzing"],
+          "acties": ["Lead registreren in Salesforce", "Regiomanager toewijzen", "Status zetten"],
+          "handovers": ["Lead naar regiomanager voor kwalificatie"],
+          "escalaties": ["Melding bij ex-lid met schuld"]
+        },
+        {
+          "nodeId": "LEAD-005",
+          "nodeTitel": "Lead/prospect afsluiten",
+          "raciType": "R",
+          "procesFase": "leadgeneratie",
+          "triggers": ["Lead gediskwalificeerd of geen interesse"],
+          "acties": ["Status afsluiten", "Reden noteren", "Nurture-lijst bijwerken"],
+          "handovers": [],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Verwerkingstijd nieuwe leads",
+        "Volledigheid leadregistratie"
+      ]
+    },
+    {
+      "rol": "ledenadministrateur",
+      "afdeling": "ledenadministratie",
+      "beschrijving": "Verwerkt aanvragen, wijzigingen en beëindigingen van lidmaatschappen",
+      "taken": [
+        {
+          "nodeId": "AANV-001",
+          "nodeTitel": "Aanvraag ontvangst",
+          "raciType": "R",
+          "procesFase": "aanvraag",
+          "triggers": ["Aanvraagformulier ontvangen"],
+          "acties": ["Aanvraag registreren", "Aanvraagnummer toekennen", "Ontvangstbevestiging versturen"],
+          "handovers": ["Naar compleetheidscheck"],
+          "escalaties": ["Direct naar Legal bij zwarte lijst"]
+        },
+        {
+          "nodeId": "AANV-002",
+          "nodeTitel": "Compleetheidscheck",
+          "raciType": "R",
+          "procesFase": "aanvraag",
+          "triggers": ["Aanvraag geregistreerd"],
+          "acties": ["Velden controleren", "Documenten controleren", "KvK-uittreksel checken"],
+          "handovers": ["Naar beoordeling of verzoek aanvulling"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "AANV-006",
+          "nodeTitel": "Verzoek aanvulling",
+          "raciType": "R",
+          "procesFase": "aanvraag",
+          "triggers": ["Aanvraag incompleet"],
+          "acties": ["Mail opstellen met ontbrekende items", "Deadline geven", "Reminder zetten"],
+          "handovers": ["Terug naar compleetheidscheck bij ontvangst"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "AANV-007",
+          "nodeTitel": "Aanvraag sluiten",
+          "raciType": "R",
+          "procesFase": "aanvraag",
+          "triggers": ["Geen reactie na herinneringen"],
+          "acties": ["Sluitingsmail versturen", "Status bijwerken"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ACT-001",
+          "nodeTitel": "Activatie lidmaatschap",
+          "raciType": "R",
+          "procesFase": "activatie",
+          "triggers": ["Betaling entreegeld ontvangen"],
+          "acties": ["Status activeren", "Lidmaatschapsnummer toekennen", "Gildelidmaatschappen aanmaken"],
+          "handovers": ["Naar welkomstcommunicatie en contributie"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "LID-001",
+          "nodeTitel": "Regulier bestandsbeheer",
+          "raciType": "R",
+          "procesFase": "lopend-lidmaatschap",
+          "triggers": ["Wijzigingsverzoeken"],
+          "acties": ["Adreswijzigingen verwerken", "Contactpersonen bijwerken", "KvK controleren"],
+          "handovers": ["Naar wijzigingsproces bij impact op contributie/gilden"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "WIJZ-001",
+          "nodeTitel": "Wijziging vestiging toevoegen",
+          "raciType": "R",
+          "procesFase": "wijzigingen",
+          "triggers": ["Lid meldt nieuwe vestiging"],
+          "acties": ["KvK controleren", "Vestiging toevoegen", "Contributie-impact berekenen"],
+          "handovers": ["Naar Finance bij contributie-impact"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "WIJZ-002",
+          "nodeTitel": "Extra gildelid toevoegen",
+          "raciType": "R",
+          "procesFase": "wijzigingen",
+          "triggers": ["Lid meldt nieuwe medewerker"],
+          "acties": ["Toelatingseisen controleren", "Gildelid toevoegen", "PE-account aanmaken"],
+          "handovers": ["Naar Gilde-organisatie voor activatie"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "BEEIN-001",
+          "nodeTitel": "Opzegging door lid",
+          "raciType": "R",
+          "procesFase": "beeindiging",
+          "triggers": ["Schriftelijke opzegging ontvangen"],
+          "acties": ["Vormvereisten controleren", "Einddatum bepalen", "Bevestiging versturen"],
+          "handovers": ["Naar definitieve afmelding op einddatum"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "BEEIN-004",
+          "nodeTitel": "Overlijden/opheffing",
+          "raciType": "R",
+          "procesFase": "beeindiging",
+          "triggers": ["Bericht overlijden of KvK-uitschrijving"],
+          "acties": ["Beëindiging registreren", "Financiële afwikkeling starten"],
+          "handovers": ["Naar archivering"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "BEEIN-005",
+          "nodeTitel": "Definitieve afmelding",
+          "raciType": "R",
+          "procesFase": "beeindiging",
+          "triggers": ["Einddatum bereikt"],
+          "acties": ["Accounts deactiveren", "Van website verwijderen", "Dossier archiveren"],
+          "handovers": [],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Doorlooptijd aanvraagverwerking",
+        "Aantal incomplete aanvragen",
+        "Verwerkingstijd wijzigingen"
+      ]
+    },
+    {
+      "rol": "senior-ledenadministrateur",
+      "afdeling": "ledenadministratie",
+      "beschrijving": "Behandelt complexe aanvragen en beoordelingen, eindverantwoordelijk voor kwaliteit",
+      "taken": [
+        {
+          "nodeId": "AANV-003",
+          "nodeTitel": "Inhoudelijke beoordeling",
+          "raciType": "R",
+          "procesFase": "beoordeling",
+          "triggers": ["Aanvraag compleet bevonden"],
+          "acties": ["Basisvereisten toetsen", "Gilde-eisen controleren", "Historie checken", "Advies opstellen"],
+          "handovers": ["Naar besluit toelating of afwijzing"],
+          "escalaties": ["Legal raadplegen bij twijfelgevallen"]
+        },
+        {
+          "nodeId": "AANV-004",
+          "nodeTitel": "Besluit toelating",
+          "raciType": "R",
+          "procesFase": "beoordeling",
+          "triggers": ["Positief advies"],
+          "acties": ["Toelatingsbrief opstellen", "Contributie berekenen", "Factuur entreegeld"],
+          "handovers": ["Naar activatie na betaling"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "AANV-005",
+          "nodeTitel": "Besluit afwijzing",
+          "raciType": "R",
+          "procesFase": "beoordeling",
+          "triggers": ["Negatief advies"],
+          "acties": ["Afwijzingsbrief opstellen", "Legal laten controleren", "Aangetekend versturen"],
+          "handovers": ["Beroepsmogelijkheid communiceren"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "WIJZ-003",
+          "nodeTitel": "Extra gilde toevoegen",
+          "raciType": "R",
+          "procesFase": "wijzigingen",
+          "triggers": ["Lid wil extra gilde"],
+          "acties": ["Geschiktheid toetsen", "Gildelidmaatschap toevoegen", "PE-eisen aanpassen"],
+          "handovers": ["Naar contributie voor aanpassing"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "WIJZ-004",
+          "nodeTitel": "Statuswijziging",
+          "raciType": "R",
+          "procesFase": "wijzigingen",
+          "triggers": ["Signaal fusie/overname/naamswijziging"],
+          "acties": ["Impact analyseren", "Juridisch adviseren indien nodig", "Wijzigingen doorvoeren"],
+          "handovers": ["Naar beëindiging indien nodig"],
+          "escalaties": ["Legal bij juridische complexiteit"]
+        },
+        {
+          "nodeId": "BEEIN-002",
+          "nodeTitel": "Opzegging namens vereniging",
+          "raciType": "R",
+          "procesFase": "beeindiging",
+          "triggers": ["Lid voldoet niet meer aan eisen"],
+          "acties": ["Dossier samenstellen", "Juridisch advies vragen", "Brief opstellen"],
+          "handovers": ["Naar beroepsprocedure indien beroep"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ESC-001",
+          "nodeTitel": "Escalatie timeout",
+          "raciType": "R",
+          "procesFase": "escalatie",
+          "triggers": ["Aanvraag >30 dagen zonder reactie"],
+          "acties": ["Beoordelen of extra inspanning zinvol", "Besluit nemen"],
+          "handovers": ["Naar afsluiting of hervatting"],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Kwaliteit beoordelingen",
+        "Doorlooptijd complexe casussen",
+        "Percentage afwijzingen dat in beroep gaat"
+      ]
+    },
+    {
+      "rol": "financieel-medewerker",
+      "afdeling": "finance",
+      "beschrijving": "Verantwoordelijk voor facturatie en financiële administratie lidmaatschappen",
+      "taken": [
+        {
+          "nodeId": "CONTR-001",
+          "nodeTitel": "Jaarcontributie facturatie",
+          "raciType": "R",
+          "procesFase": "contributie",
+          "triggers": ["Jaarlijks januari / activatie nieuw lid"],
+          "acties": ["Facturen genereren", "Pro-rata berekenen", "Facturen versturen"],
+          "handovers": ["Naar herinnering bij non-betaling"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "CONTR-002",
+          "nodeTitel": "Tussentijdse facturatie",
+          "raciType": "R",
+          "procesFase": "contributie",
+          "triggers": ["Wijziging met contributie-impact"],
+          "acties": ["Aanvullende contributie berekenen", "Factuur aanmaken", "Versturen met toelichting"],
+          "handovers": ["Naar herinnering bij non-betaling"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "CONTR-003",
+          "nodeTitel": "Eerste herinnering",
+          "raciType": "R",
+          "procesFase": "contributie",
+          "triggers": ["Betalingstermijn verstreken"],
+          "acties": ["Herinnering versturen", "Nieuwe termijn geven"],
+          "handovers": ["Naar tweede herinnering"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "CONTR-006",
+          "nodeTitel": "Jaarlijkse indexatie",
+          "raciType": "R",
+          "procesFase": "contributie",
+          "triggers": ["Q4 jaarlijks"],
+          "acties": ["Indexatie berekenen", "Staffels aanpassen", "Systemen updaten"],
+          "handovers": ["Nieuwe staffels naar jaarfacturatie"],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Facturatiesnelheid",
+        "Facturatiefouten percentage",
+        "DSO (Days Sales Outstanding)"
+      ]
+    },
+    {
+      "rol": "credit-controller",
+      "afdeling": "finance",
+      "beschrijving": "Verantwoordelijk voor debiteurenbeheer en incasso",
+      "taken": [
+        {
+          "nodeId": "CONTR-004",
+          "nodeTitel": "Tweede herinnering/aanmaning",
+          "raciType": "R",
+          "procesFase": "contributie",
+          "triggers": ["Geen betaling na eerste herinnering"],
+          "acties": ["Aanmaning versturen", "Regiomanager informeren"],
+          "handovers": ["Naar incassoprocedure"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "CONTR-005",
+          "nodeTitel": "Incasso/schorsing",
+          "raciType": "R",
+          "procesFase": "contributie",
+          "triggers": ["Aanhoudende wanbetaling"],
+          "acties": ["Incasso-opties bespreken met Legal", "Schorsing voorbereiden", "Incassobureau inschakelen"],
+          "handovers": ["Naar ontzetting of betalingsregeling"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ESC-002",
+          "nodeTitel": "Ex-lid met schuld",
+          "raciType": "R",
+          "procesFase": "escalatie",
+          "triggers": ["Ex-lid wil opnieuw lid worden"],
+          "acties": ["Schuldpositie beoordelen", "Voorwaarden vaststellen"],
+          "handovers": ["Naar normale procedure na voldoening schuld"],
+          "escalaties": ["Legal bij betwiste vordering"]
+        },
+        {
+          "nodeId": "ESC-004",
+          "nodeTitel": "Contributie bezwaar",
+          "raciType": "R",
+          "procesFase": "escalatie",
+          "triggers": ["Lid maakt bezwaar tegen factuur"],
+          "acties": ["Factuur controleren", "Bezwaar analyseren", "Reactie opstellen"],
+          "handovers": ["Correctie of afwijzing bezwaar"],
+          "escalaties": ["Legal bij principiële bezwaren"]
+        },
+        {
+          "nodeId": "ESC-007",
+          "nodeTitel": "Betalingsregeling",
+          "raciType": "R",
+          "procesFase": "escalatie",
+          "triggers": ["Verzoek betalingsregeling"],
+          "acties": ["Situatie beoordelen", "Voorstel opstellen", "Nakoming monitoren"],
+          "handovers": ["Naar incasso bij niet-nakoming"],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Incasso-effectiviteit",
+        "Percentage wanbetalers",
+        "Afschrijvingen als percentage omzet"
+      ]
+    },
+    {
+      "rol": "juridisch-adviseur",
+      "afdeling": "legal",
+      "beschrijving": "Juridisch advies en ondersteuning bij complexe casussen en procedures",
+      "taken": [
+        {
+          "nodeId": "BEEIN-003",
+          "nodeTitel": "Ontzetting",
+          "raciType": "R",
+          "procesFase": "beeindiging",
+          "triggers": ["Ernstige schending regels"],
+          "acties": ["Dossier samenstellen", "Hoor en wederhoor organiseren", "Besluit voorbereiden"],
+          "handovers": ["Naar definitieve afmelding of beroep"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "BEEIN-007",
+          "nodeTitel": "Beroepsprocedure",
+          "raciType": "R",
+          "procesFase": "beeindiging",
+          "triggers": ["Beroepschrift ontvangen"],
+          "acties": ["Ontvankelijkheid toetsen", "Verweer opstellen", "Hoorzitting voorbereiden"],
+          "handovers": ["Uitvoering besluit na uitspraak"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ESC-003",
+          "nodeTitel": "Juridische beoordeling",
+          "raciType": "R",
+          "procesFase": "escalatie",
+          "triggers": ["Juridische complexiteit of risico"],
+          "acties": ["Juridische analyse", "Risico-inschatting", "Advies opstellen"],
+          "handovers": ["Terug naar aanvraagproces met advies"],
+          "escalaties": ["Extern advies indien nodig"]
+        },
+        {
+          "nodeId": "ESC-005",
+          "nodeTitel": "Klacht of conflict",
+          "raciType": "R",
+          "procesFase": "escalatie",
+          "triggers": ["Klacht ontvangen"],
+          "acties": ["Klacht registreren", "Onderzoek uitvoeren", "Oplossing voorstellen"],
+          "handovers": ["Naar tuchtrecht indien van toepassing"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ESC-006",
+          "nodeTitel": "Tuchtrechtprocedure",
+          "raciType": "R",
+          "procesFase": "escalatie",
+          "triggers": ["Tuchtklacht ingediend"],
+          "acties": ["Tuchtcommissie ondersteunen", "Administratie verzorgen", "Uitspraak communiceren"],
+          "handovers": ["Naar ontzetting of beëindiging gildelidmaatschap"],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Doorlooptijd juridische adviezen",
+        "Percentage gewonnen beroepszaken",
+        "Klanttevredenheid intern advies"
+      ]
+    },
+    {
+      "rol": "ambtelijk-secretaris",
+      "afdeling": "gilde-organisatie",
+      "beschrijving": "Operationele ondersteuning van het gilde en gilderaad",
+      "taken": [
+        {
+          "nodeId": "GILDE-001",
+          "nodeTitel": "Gilde-informatie verstrekken",
+          "raciType": "R",
+          "procesFase": "intake",
+          "triggers": ["Vraag over gilde"],
+          "acties": ["Toelatingseisen uitleggen", "PE-verplichtingen toelichten", "Activiteiten presenteren"],
+          "handovers": ["Terug naar Sales"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ACT-004",
+          "nodeTitel": "Gildelid activatie",
+          "raciType": "R",
+          "procesFase": "activatie",
+          "triggers": ["Lidmaatschap geactiveerd met gildeleden"],
+          "acties": ["Toelatingseisen controleren", "Gildelidmaatschap activeren", "PE-account aanmaken"],
+          "handovers": ["Naar PE-monitoring"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "GILDE-002",
+          "nodeTitel": "PE-monitoring",
+          "raciType": "R",
+          "procesFase": "gilde-beheer",
+          "triggers": ["Doorlopend/kwartaalrapportage"],
+          "acties": ["PE-voortgang controleren", "Achterstanden identificeren", "Waarschuwingen versturen"],
+          "handovers": ["Naar PE-tekort procedure bij niet halen"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "GILDE-003",
+          "nodeTitel": "PE-tekort afhandeling",
+          "raciType": "R",
+          "procesFase": "gilde-beheer",
+          "triggers": ["PE-verplichting niet gehaald"],
+          "acties": ["Tekort vaststellen", "Hersteltermijn geven", "Herstel beoordelen"],
+          "handovers": ["Terug naar monitoring of naar beëindiging"],
+          "escalaties": ["Gilderaad bij bijzondere omstandigheden"]
+        },
+        {
+          "nodeId": "GILDE-004",
+          "nodeTitel": "Beëindiging gildelidmaatschap",
+          "raciType": "R",
+          "procesFase": "gilde-beheer",
+          "triggers": ["PE-tekort niet hersteld / verzoek / tuchtmaatregel"],
+          "acties": ["Beëindiging formaliseren", "PE-account deactiveren", "Administratie bijwerken"],
+          "handovers": ["Naar regulier beheer of beëindiging lidmaatschap"],
+          "escalaties": []
+        },
+        {
+          "nodeId": "GILDE-005",
+          "nodeTitel": "Kandidaat-gildelid beoordeling",
+          "raciType": "R",
+          "procesFase": "gilde-beheer",
+          "triggers": ["Kandidaat voldoet nog niet volledig aan eisen"],
+          "acties": ["Kwalificaties beoordelen", "Voorwaarden bepalen", "Tijdpad afspreken"],
+          "handovers": ["Naar activatie met voorwaarden"],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "PE-compliance percentage per gilde",
+        "Doorlooptijd gildelid-activaties",
+        "Aantal PE-tekort procedures"
+      ]
+    },
+    {
+      "rol": "communicatieadviseur",
+      "afdeling": "marcom",
+      "beschrijving": "Verantwoordelijk voor ledencommunicatie en externe zichtbaarheid",
+      "taken": [
+        {
+          "nodeId": "ACT-002",
+          "nodeTitel": "Welkomstcommunicatie",
+          "raciType": "R",
+          "procesFase": "onboarding",
+          "triggers": ["Lidmaatschap geactiveerd"],
+          "acties": ["Welkomstmail versturen", "Welkomstpakket versturen", "Website bijwerken"],
+          "handovers": ["Naar kennismaking door Sales"],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Tijdigheid welkomstcommunicatie",
+        "Open rate welkomstmails"
+      ]
+    },
+    {
+      "rol": "directeur",
+      "afdeling": "bestuur",
+      "beschrijving": "Eindverantwoordelijk voor operatie en besluitvorming",
+      "taken": [
+        {
+          "nodeId": "AANV-004",
+          "nodeTitel": "Besluit toelating",
+          "raciType": "A",
+          "procesFase": "beoordeling",
+          "triggers": ["Toelating met hoge contributie"],
+          "acties": ["Accorderen toelating"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "AANV-005",
+          "nodeTitel": "Besluit afwijzing",
+          "raciType": "A",
+          "procesFase": "beoordeling",
+          "triggers": ["Afwijzing voorgelegd"],
+          "acties": ["Accorderen afwijzing"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "BEEIN-002",
+          "nodeTitel": "Opzegging namens vereniging",
+          "raciType": "A",
+          "procesFase": "beeindiging",
+          "triggers": ["Voorstel opzegging"],
+          "acties": ["Besluit nemen tot opzegging"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "BEEIN-003",
+          "nodeTitel": "Ontzetting",
+          "raciType": "A",
+          "procesFase": "beeindiging",
+          "triggers": ["Voorstel ontzetting"],
+          "acties": ["Besluit nemen tot ontzetting"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "CONTR-005",
+          "nodeTitel": "Schorsing",
+          "raciType": "A",
+          "procesFase": "contributie",
+          "triggers": ["Voorstel schorsing"],
+          "acties": ["Accorderen schorsing"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "CONTR-006",
+          "nodeTitel": "Indexatie",
+          "raciType": "A",
+          "procesFase": "contributie",
+          "triggers": ["Jaarlijkse indexatie"],
+          "acties": ["Vaststellen indexatiepercentage"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ESC-003",
+          "nodeTitel": "Juridische beoordeling",
+          "raciType": "A",
+          "procesFase": "escalatie",
+          "triggers": ["Juridisch advies voorgelegd"],
+          "acties": ["Besluit nemen op basis van advies"],
+          "handovers": [],
+          "escalaties": []
+        },
+        {
+          "nodeId": "ESC-007",
+          "nodeTitel": "Betalingsregeling",
+          "raciType": "A",
+          "procesFase": "escalatie",
+          "triggers": ["Voorstel betalingsregeling"],
+          "acties": ["Accorderen betalingsregeling"],
+          "handovers": [],
+          "escalaties": []
+        }
+      ],
+      "kpiIndicatoren": [
+        "Besluitvormingssnelheid",
+        "Percentage besluiten in beroep aangevochten"
+      ]
+    }
+  ]
+}

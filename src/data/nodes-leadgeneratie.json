@@ -1,0 +1,342 @@
+{
+  "nodes": [
+    {
+      "id": "LEAD-001",
+      "titel": "Lead binnenkomst",
+      "korteBeschrijving": "Nieuwe potentiële leden worden geregistreerd vanuit diverse bronnen",
+      "klantreisStatus": "lead",
+      "procesFase": "leadgeneratie",
+      "casusType": "standaard",
+      "primaireAfdeling": "sales",
+      "raci": [
+        { "rol": "sales-binnendienst", "afdeling": "sales", "type": "R", "toelichting": "Registreert lead in Salesforce" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "A", "toelichting": "Eindverantwoordelijk voor leadkwalificatie" },
+        { "rol": "marketingmedewerker", "afdeling": "marcom", "type": "I", "toelichting": "Wordt geïnformeerd over leadbronnen" }
+      ],
+      "trigger": "Beurs, website-formulier, doorverwijzing, cold outreach, evenement",
+      "inputs": [
+        "Contactgegevens (naam, email, telefoon)",
+        "Bedrijfsnaam",
+        "Bron van de lead"
+      ],
+      "acties": [
+        "Controleer of lead al bestaat in Salesforce",
+        "Maak nieuwe lead aan of koppel aan bestaande",
+        "Wijs toe aan juiste regiomanager op basis van postcode",
+        "Zet lead op status 'Nieuw'"
+      ],
+      "outputs": [
+        "Lead aangemaakt in Salesforce",
+        "Regiomanager toegewezen"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 1 werkdag",
+        "maximum": "2 werkdagen",
+        "escalatieBij": "Lead blijft >2 dagen zonder toewijzing"
+      },
+      "handovers": [
+        {
+          "naarNode": "LEAD-002",
+          "conditie": "Lead is gekwalificeerd (bedrijf in vastgoedsector)",
+          "overdracht": "Lead record met contactgegevens en bron"
+        },
+        {
+          "naarNode": "LEAD-005",
+          "conditie": "Lead valt buiten doelgroep",
+          "overdracht": "Lead record voor archivering"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "LEAD-001-U1",
+          "conditie": "Lead is al lid",
+          "actie": "Koppel aan bestaand account, informeer accountmanager",
+          "verantwoordelijke": "sales-binnendienst"
+        },
+        {
+          "id": "LEAD-001-U2",
+          "conditie": "Lead is ex-lid met openstaande schuld",
+          "actie": "Meld bij Finance voordat verdere opvolging plaatsvindt",
+          "verantwoordelijke": "sales-binnendienst",
+          "escaleertNaar": "ESC-002"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Lead aanmaken", "veld": "Lead object", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Bron vastleggen", "veld": "Lead Source", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Regiomanager toewijzen", "veld": "Owner", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "sales-binnendienst",
+        "eigenaarAfdeling": "sales",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["leadgeneratie", "crm", "eerste-contact"]
+    },
+    {
+      "id": "LEAD-002",
+      "titel": "Eerste contact / kwalificatie",
+      "korteBeschrijving": "Regiomanager neemt contact op om interesse en geschiktheid te bepalen",
+      "klantreisStatus": "lead",
+      "procesFase": "leadgeneratie",
+      "casusType": "standaard",
+      "primaireAfdeling": "sales",
+      "raci": [
+        { "rol": "regiomanager", "afdeling": "sales", "type": "R", "toelichting": "Voert kwalificatiegesprek" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "A", "toelichting": "Bepaalt of lead naar prospect gaat" }
+      ],
+      "trigger": "Nieuwe lead toegewezen in Salesforce",
+      "inputs": [
+        "Lead record uit Salesforce",
+        "Eventuele notities van binnendienst"
+      ],
+      "acties": [
+        "Neem binnen 2 werkdagen telefonisch contact op",
+        "Stel kwalificatievragen: type bedrijf, aantal medewerkers, welke gilden interessant",
+        "Bepaal of bedrijf voldoet aan basiscriteria lidmaatschap",
+        "Plan indien positief een adviesgesprek in"
+      ],
+      "outputs": [
+        "Lead gekwalificeerd als prospect OF gediskwalificeerd",
+        "Indien prospect: afspraak voor adviesgesprek"
+      ],
+      "doorlooptijd": {
+        "standaard": "Contact binnen 2 werkdagen",
+        "maximum": "5 werkdagen",
+        "escalatieBij": "Geen contact na 5 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "LEAD-003",
+          "conditie": "Lead is gekwalificeerd als prospect",
+          "overdracht": "Prospect record met kwalificatienotities"
+        },
+        {
+          "naarNode": "LEAD-005",
+          "conditie": "Lead is gediskwalificeerd",
+          "overdracht": "Lead record met reden diskwalificatie"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "LEAD-002-U1",
+          "conditie": "Lead niet bereikbaar na 3 pogingen",
+          "actie": "Zet op nurture-campagne MarCom, probeer over 3 maanden opnieuw",
+          "verantwoordelijke": "regiomanager"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Contactpogingen loggen", "veld": "Activity History", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Kwalificatiestatus bijwerken", "veld": "Lead Status", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Kwalificatienotities", "veld": "Description", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 4",
+          "omschrijving": "Vereisten voor lidmaatschap"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "regiomanager",
+        "eigenaarAfdeling": "sales",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["kwalificatie", "telefonisch-contact"]
+    },
+    {
+      "id": "LEAD-003",
+      "titel": "Adviesgesprek",
+      "korteBeschrijving": "Persoonlijk gesprek om lidmaatschap en gilden toe te lichten",
+      "klantreisStatus": "prospect",
+      "procesFase": "intake",
+      "casusType": "standaard",
+      "primaireAfdeling": "sales",
+      "raci": [
+        { "rol": "regiomanager", "afdeling": "sales", "type": "R", "toelichting": "Voert adviesgesprek" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "A", "toelichting": "Adviseert over geschikte gilden" }
+      ],
+      "trigger": "Afspraak ingepland na succesvolle kwalificatie",
+      "inputs": [
+        "Prospect record met kwalificatiegegevens",
+        "Informatiepakket lidmaatschap",
+        "Contributietabel actueel jaar"
+      ],
+      "acties": [
+        "Voer adviesgesprek (fysiek of online)",
+        "Bespreek voordelen lidmaatschap en relevante gilden",
+        "Ga na welke gildeleden kunnen worden aangemeld",
+        "Bespreek contributieopbouw en entreegeld",
+        "Beantwoord vragen over toelatingsprocedure",
+        "Indien interesse: verstrek aanvraagformulier"
+      ],
+      "outputs": [
+        "Prospect geïnformeerd over lidmaatschap",
+        "Aanvraagformulier verstrekt OF geen interesse"
+      ],
+      "doorlooptijd": {
+        "standaard": "Gesprek binnen 10 werkdagen na kwalificatie",
+        "maximum": "15 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-001",
+          "conditie": "Prospect wil aanvraag indienen",
+          "overdracht": "Ingevuld aanvraagformulier"
+        },
+        {
+          "naarNode": "LEAD-004",
+          "conditie": "Prospect wil nog nadenken",
+          "overdracht": "Prospect record met follow-up datum"
+        },
+        {
+          "naarNode": "LEAD-005",
+          "conditie": "Prospect heeft geen interesse",
+          "overdracht": "Prospect record met reden"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "LEAD-003-U1",
+          "conditie": "Prospect vraagt om specifieke gilde-informatie die regiomanager niet heeft",
+          "actie": "Schakel ambtelijk secretaris van betreffende gilde in",
+          "verantwoordelijke": "regiomanager",
+          "escaleertNaar": "GILDE-001"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Gespreksverslag vastleggen", "veld": "Activity", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Geïnteresseerde gilden noteren", "veld": "Opportunity - Products", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Status naar Prospect", "veld": "Lead Status", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 4-6",
+          "omschrijving": "Lidmaatschapsvereisten en gilden"
+        },
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3",
+          "omschrijving": "Contributiestructuur"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "regiomanager",
+        "eigenaarAfdeling": "sales",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["adviesgesprek", "intake", "gilden"]
+    },
+    {
+      "id": "LEAD-004",
+      "titel": "Follow-up prospect",
+      "korteBeschrijving": "Opvolging van prospects die nog twijfelen",
+      "klantreisStatus": "prospect",
+      "procesFase": "intake",
+      "casusType": "standaard",
+      "primaireAfdeling": "sales",
+      "raci": [
+        { "rol": "regiomanager", "afdeling": "sales", "type": "R", "toelichting": "Voert follow-up uit" },
+        { "rol": "sales-binnendienst", "afdeling": "sales", "type": "C", "toelichting": "Ondersteunt met mailings" }
+      ],
+      "trigger": "Follow-up datum bereikt in Salesforce",
+      "inputs": [
+        "Prospect record met gesprekshistorie"
+      ],
+      "acties": [
+        "Neem contact op via telefoon of email",
+        "Beantwoord eventuele aanvullende vragen",
+        "Peil interesse opnieuw"
+      ],
+      "outputs": [
+        "Prospect besluit tot aanvraag OF definitief geen interesse"
+      ],
+      "doorlooptijd": {
+        "standaard": "Contact op afgesproken datum",
+        "maximum": "3 werkdagen na geplande datum"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-001",
+          "conditie": "Prospect wil aanvraag indienen",
+          "overdracht": "Aanvraagformulier"
+        },
+        {
+          "naarNode": "LEAD-005",
+          "conditie": "Prospect definitief geen interesse",
+          "overdracht": "Prospect record voor archivering"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Follow-up loggen", "veld": "Activity", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "regiomanager",
+        "eigenaarAfdeling": "sales",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["follow-up", "nurturing"]
+    },
+    {
+      "id": "LEAD-005",
+      "titel": "Lead/prospect afsluiten",
+      "korteBeschrijving": "Administratieve afsluiting van niet-converterende leads",
+      "klantreisStatus": "lead",
+      "procesFase": "leadgeneratie",
+      "casusType": "standaard",
+      "primaireAfdeling": "sales",
+      "raci": [
+        { "rol": "sales-binnendienst", "afdeling": "sales", "type": "R", "toelichting": "Sluit lead af in systeem" }
+      ],
+      "trigger": "Lead/prospect gediskwalificeerd of geen interesse",
+      "inputs": [
+        "Lead/prospect record met reden afsluiting"
+      ],
+      "acties": [
+        "Zet status op 'Afgesloten - geen lid'",
+        "Noteer reden van afsluiting",
+        "Voeg eventueel toe aan nurture-lijst voor toekomstig contact"
+      ],
+      "outputs": [
+        "Lead administratief afgesloten"
+      ],
+      "handovers": [],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status afsluiten", "veld": "Lead Status", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Reden afsluiting", "veld": "Lost Reason", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "sales-binnendienst",
+        "eigenaarAfdeling": "sales",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["afsluiting", "archivering"]
+    }
+  ]
+}

@@ -1,0 +1,409 @@
+{
+  "documenten": [
+    {
+      "id": "STAT",
+      "naam": "Statuten",
+      "versie": "2024-01",
+      "artikelen": [
+        {
+          "artikel": "Art. 4",
+          "titel": "Vereisten voor lidmaatschap",
+          "omschrijving": "Definieert wie lid kan worden van de vereniging",
+          "gerelateerdeNodes": ["LEAD-002", "AANV-003"]
+        },
+        {
+          "artikel": "Art. 4 lid 1-3",
+          "titel": "Specifieke lidmaatschapsvereisten",
+          "omschrijving": "Detaileisen voor toelating",
+          "gerelateerdeNodes": ["AANV-003"]
+        },
+        {
+          "artikel": "Art. 5 lid 1",
+          "titel": "Aanvraagprocedure",
+          "omschrijving": "Hoe lidmaatschap wordt aangevraagd",
+          "gerelateerdeNodes": ["AANV-001"]
+        },
+        {
+          "artikel": "Art. 5 lid 2",
+          "titel": "Beoordelingscriteria",
+          "omschrijving": "Waarop aanvragen worden beoordeeld",
+          "gerelateerdeNodes": ["AANV-003"]
+        },
+        {
+          "artikel": "Art. 5 lid 3",
+          "titel": "Besluitvorming toelating",
+          "omschrijving": "Wie besluit over toelating en hoe",
+          "gerelateerdeNodes": ["AANV-004"]
+        },
+        {
+          "artikel": "Art. 5 lid 4",
+          "titel": "Afwijzing en motivering",
+          "omschrijving": "Plicht tot motivering bij afwijzing",
+          "gerelateerdeNodes": ["AANV-005"]
+        },
+        {
+          "artikel": "Art. 5 lid 5",
+          "titel": "Beroep bij afwijzing",
+          "omschrijving": "Mogelijkheid tot beroep tegen afwijzing",
+          "gerelateerdeNodes": ["AANV-005", "BEEIN-007"]
+        },
+        {
+          "artikel": "Art. 6 lid 1",
+          "titel": "Aanvang lidmaatschap",
+          "omschrijving": "Wanneer lidmaatschap begint",
+          "gerelateerdeNodes": ["ACT-001"]
+        },
+        {
+          "artikel": "Art. 6 lid 3",
+          "titel": "Lidmaatschap meerdere gilden",
+          "omschrijving": "Mogelijkheid tot aansluiting bij meerdere gilden",
+          "gerelateerdeNodes": ["WIJZ-003"]
+        },
+        {
+          "artikel": "Art. 7",
+          "titel": "Overgang lidmaatschap",
+          "omschrijving": "Regels bij overdracht/fusie/overname",
+          "gerelateerdeNodes": ["WIJZ-004"]
+        },
+        {
+          "artikel": "Art. 8 lid 3",
+          "titel": "Schorsing lidmaatschapsrechten",
+          "omschrijving": "Mogelijkheid tot schorsing bij wanbetaling",
+          "gerelateerdeNodes": ["CONTR-005"]
+        },
+        {
+          "artikel": "Art. 9 lid 1",
+          "titel": "Opzegging door lid",
+          "omschrijving": "Recht van lid om op te zeggen",
+          "gerelateerdeNodes": ["BEEIN-001"]
+        },
+        {
+          "artikel": "Art. 9 lid 2",
+          "titel": "Opzegtermijn",
+          "omschrijving": "Termijnen en einddatum bij opzegging",
+          "gerelateerdeNodes": ["BEEIN-001"]
+        },
+        {
+          "artikel": "Art. 9 lid 3",
+          "titel": "Opzegging namens vereniging",
+          "omschrijving": "Recht van vereniging om op te zeggen",
+          "gerelateerdeNodes": ["BEEIN-002"]
+        },
+        {
+          "artikel": "Art. 9 lid 4",
+          "titel": "Gronden opzegging door vereniging",
+          "omschrijving": "Wanneer vereniging mag opzeggen",
+          "gerelateerdeNodes": ["BEEIN-002"]
+        },
+        {
+          "artikel": "Art. 9 lid 5",
+          "titel": "Beëindiging door overlijden",
+          "omschrijving": "Automatische beëindiging bij overlijden/opheffing",
+          "gerelateerdeNodes": ["BEEIN-004"]
+        },
+        {
+          "artikel": "Art. 10",
+          "titel": "Ontzetting",
+          "omschrijving": "Procedure en gronden voor ontzetting (royement)",
+          "gerelateerdeNodes": ["BEEIN-003"]
+        },
+        {
+          "artikel": "Art. 10 lid 2",
+          "titel": "Gronden voor ontzetting",
+          "omschrijving": "Specifieke ontzettingsgronden",
+          "gerelateerdeNodes": ["BEEIN-003"]
+        },
+        {
+          "artikel": "Art. 10 lid 4",
+          "titel": "Beroep bij ontzetting",
+          "omschrijving": "Beroepsmogelijkheid bij ALV",
+          "gerelateerdeNodes": ["BEEIN-003", "BEEIN-007"]
+        }
+      ]
+    },
+    {
+      "id": "HR",
+      "naam": "Huishoudelijk Reglement",
+      "versie": "2024-01",
+      "artikelen": [
+        {
+          "artikel": "Art. 2 lid 3",
+          "titel": "Vereiste documentatie",
+          "omschrijving": "Documenten nodig bij aanvraag",
+          "gerelateerdeNodes": ["AANV-002"]
+        },
+        {
+          "artikel": "Art. 3 lid 1",
+          "titel": "Entreegeld",
+          "omschrijving": "Hoogte en verschuldigdheid entreegeld",
+          "gerelateerdeNodes": ["AANV-004"]
+        },
+        {
+          "artikel": "Art. 3 lid 1-3",
+          "titel": "Contributiestructuur",
+          "omschrijving": "Opbouw en staffels contributie",
+          "gerelateerdeNodes": ["LEAD-003", "CONTR-001"]
+        },
+        {
+          "artikel": "Art. 3 lid 4",
+          "titel": "Contributie meerdere vestigingen",
+          "omschrijving": "Impact vestigingen op contributie",
+          "gerelateerdeNodes": ["WIJZ-001"]
+        },
+        {
+          "artikel": "Art. 3 lid 5",
+          "titel": "Contributie gildeleden",
+          "omschrijving": "Toeslag per gildelid",
+          "gerelateerdeNodes": ["WIJZ-002"]
+        },
+        {
+          "artikel": "Art. 3 lid 6",
+          "titel": "Tussentijdse wijzigingen",
+          "omschrijving": "Pro-rata berekening bij wijzigingen",
+          "gerelateerdeNodes": ["CONTR-002"]
+        },
+        {
+          "artikel": "Art. 3 lid 7",
+          "titel": "Indexatieclausule",
+          "omschrijving": "Jaarlijkse indexatie contributie",
+          "gerelateerdeNodes": ["CONTR-006"]
+        },
+        {
+          "artikel": "Art. 3 lid 8",
+          "titel": "Bezwaarprocedure contributie",
+          "omschrijving": "Mogelijkheid bezwaar tegen contributie",
+          "gerelateerdeNodes": ["ESC-004"]
+        },
+        {
+          "artikel": "Art. 4",
+          "titel": "Schorsing bij wanbetaling",
+          "omschrijving": "Procedure schorsing bij niet-betaling",
+          "gerelateerdeNodes": ["CONTR-005"]
+        },
+        {
+          "artikel": "Art. 5",
+          "titel": "Heraansluiting",
+          "omschrijving": "Voorwaarden voor ex-leden",
+          "gerelateerdeNodes": ["ESC-002"]
+        },
+        {
+          "artikel": "Art. 12",
+          "titel": "Bewaartermijnen",
+          "omschrijving": "Archivering ledendossiers",
+          "gerelateerdeNodes": ["BEEIN-005"]
+        },
+        {
+          "artikel": "Art. 14",
+          "titel": "Klachtenregeling",
+          "omschrijving": "Procedure voor klachten",
+          "gerelateerdeNodes": ["ESC-005"]
+        },
+        {
+          "artikel": "Art. 15",
+          "titel": "Beroepsprocedure",
+          "omschrijving": "Algemene beroepsprocedure",
+          "gerelateerdeNodes": ["BEEIN-007"]
+        }
+      ]
+    },
+    {
+      "id": "RGM",
+      "naam": "Reglement Gilde Makelaars",
+      "versie": "2024-01",
+      "artikelen": [
+        {
+          "artikel": "Art. 1-5",
+          "titel": "Algemene bepalingen",
+          "omschrijving": "Doelstelling en organisatie gilde",
+          "gerelateerdeNodes": ["GILDE-001"]
+        },
+        {
+          "artikel": "Art. 3",
+          "titel": "Toelatingseisen",
+          "omschrijving": "Specifieke eisen voor makelaars",
+          "gerelateerdeNodes": ["AANV-003"]
+        },
+        {
+          "artikel": "Art. 4",
+          "titel": "Toelatingseisen gildeleden",
+          "omschrijving": "Eisen aan individuele makelaars",
+          "gerelateerdeNodes": ["ACT-004", "WIJZ-002"]
+        },
+        {
+          "artikel": "Art. 5",
+          "titel": "Kandidaat-lidmaatschap",
+          "omschrijving": "Voorwaardelijke toelating",
+          "gerelateerdeNodes": ["GILDE-005"]
+        },
+        {
+          "artikel": "Art. 8",
+          "titel": "PE-verplichtingen",
+          "omschrijving": "Permanente educatie eisen",
+          "gerelateerdeNodes": ["GILDE-002"]
+        },
+        {
+          "artikel": "Art. 9",
+          "titel": "Sancties PE-tekort",
+          "omschrijving": "Gevolgen niet halen PE",
+          "gerelateerdeNodes": ["GILDE-003"]
+        },
+        {
+          "artikel": "Art. 10",
+          "titel": "Beëindiging gildelidmaatschap",
+          "omschrijving": "Uitschrijving uit gilde",
+          "gerelateerdeNodes": ["GILDE-004"]
+        },
+        {
+          "artikel": "Art. 12",
+          "titel": "Tuchtrecht",
+          "omschrijving": "Tuchtrechtelijke bepalingen",
+          "gerelateerdeNodes": ["ESC-006"]
+        }
+      ]
+    },
+    {
+      "id": "RGT",
+      "naam": "Reglement Gilde Taxateurs",
+      "versie": "2024-01",
+      "artikelen": [
+        {
+          "artikel": "Art. 1-5",
+          "titel": "Algemene bepalingen",
+          "omschrijving": "Doelstelling en organisatie gilde",
+          "gerelateerdeNodes": ["GILDE-001"]
+        },
+        {
+          "artikel": "Art. 4",
+          "titel": "Toelatingseisen gildeleden",
+          "omschrijving": "Eisen aan individuele taxateurs",
+          "gerelateerdeNodes": ["ACT-004", "WIJZ-002"]
+        },
+        {
+          "artikel": "Art. 5",
+          "titel": "Kandidaat-lidmaatschap",
+          "omschrijving": "Voorwaardelijke toelating",
+          "gerelateerdeNodes": ["GILDE-005"]
+        },
+        {
+          "artikel": "Art. 8",
+          "titel": "PE-verplichtingen",
+          "omschrijving": "Permanente educatie eisen",
+          "gerelateerdeNodes": ["GILDE-002"]
+        },
+        {
+          "artikel": "Art. 9",
+          "titel": "Sancties PE-tekort",
+          "omschrijving": "Gevolgen niet halen PE",
+          "gerelateerdeNodes": ["GILDE-003"]
+        },
+        {
+          "artikel": "Art. 10",
+          "titel": "Beëindiging gildelidmaatschap",
+          "omschrijving": "Uitschrijving uit gilde",
+          "gerelateerdeNodes": ["GILDE-004"]
+        }
+      ]
+    },
+    {
+      "id": "TR",
+      "naam": "Tuchtreglement",
+      "versie": "2024-01",
+      "artikelen": [
+        {
+          "artikel": "Volledig",
+          "titel": "Tuchtprocedure",
+          "omschrijving": "Complete procedure en maatregelen tuchtrecht",
+          "gerelateerdeNodes": ["ESC-006"]
+        }
+      ]
+    }
+  ],
+  "nodeNaarReglement": {
+    "LEAD-002": [{"document": "STAT", "artikel": "Art. 4"}],
+    "LEAD-003": [{"document": "HR", "artikel": "Art. 3 lid 1-3"}],
+    "AANV-001": [{"document": "STAT", "artikel": "Art. 5 lid 1"}],
+    "AANV-002": [{"document": "HR", "artikel": "Art. 2 lid 3"}],
+    "AANV-003": [
+      {"document": "STAT", "artikel": "Art. 4 lid 1-3"},
+      {"document": "STAT", "artikel": "Art. 5 lid 2"},
+      {"document": "RGM", "artikel": "Art. 3"}
+    ],
+    "AANV-004": [
+      {"document": "STAT", "artikel": "Art. 5 lid 3"},
+      {"document": "HR", "artikel": "Art. 3 lid 1"}
+    ],
+    "AANV-005": [
+      {"document": "STAT", "artikel": "Art. 5 lid 4"},
+      {"document": "STAT", "artikel": "Art. 5 lid 5"}
+    ],
+    "ACT-001": [{"document": "STAT", "artikel": "Art. 6 lid 1"}],
+    "ACT-004": [
+      {"document": "RGM", "artikel": "Art. 4"},
+      {"document": "RGT", "artikel": "Art. 4"}
+    ],
+    "WIJZ-001": [{"document": "HR", "artikel": "Art. 3 lid 4"}],
+    "WIJZ-002": [
+      {"document": "RGM", "artikel": "Art. 4"},
+      {"document": "HR", "artikel": "Art. 3 lid 5"}
+    ],
+    "WIJZ-003": [{"document": "STAT", "artikel": "Art. 6 lid 3"}],
+    "WIJZ-004": [{"document": "STAT", "artikel": "Art. 7"}],
+    "CONTR-001": [
+      {"document": "HR", "artikel": "Art. 3 lid 1-3"},
+      {"document": "ALV", "artikel": "Jaarlijks"}
+    ],
+    "CONTR-002": [{"document": "HR", "artikel": "Art. 3 lid 6"}],
+    "CONTR-005": [
+      {"document": "HR", "artikel": "Art. 4"},
+      {"document": "STAT", "artikel": "Art. 8 lid 3"}
+    ],
+    "CONTR-006": [{"document": "HR", "artikel": "Art. 3 lid 7"}],
+    "GILDE-001": [
+      {"document": "RGM", "artikel": "Art. 1-5"},
+      {"document": "RGT", "artikel": "Art. 1-5"}
+    ],
+    "GILDE-002": [
+      {"document": "RGM", "artikel": "Art. 8"},
+      {"document": "RGT", "artikel": "Art. 8"}
+    ],
+    "GILDE-003": [
+      {"document": "RGM", "artikel": "Art. 9"},
+      {"document": "RGT", "artikel": "Art. 9"}
+    ],
+    "GILDE-004": [
+      {"document": "RGM", "artikel": "Art. 10"},
+      {"document": "RGT", "artikel": "Art. 10"}
+    ],
+    "GILDE-005": [
+      {"document": "RGM", "artikel": "Art. 5"},
+      {"document": "RGT", "artikel": "Art. 5"}
+    ],
+    "BEEIN-001": [
+      {"document": "STAT", "artikel": "Art. 9 lid 1"},
+      {"document": "STAT", "artikel": "Art. 9 lid 2"}
+    ],
+    "BEEIN-002": [
+      {"document": "STAT", "artikel": "Art. 9 lid 3"},
+      {"document": "STAT", "artikel": "Art. 9 lid 4"}
+    ],
+    "BEEIN-003": [
+      {"document": "STAT", "artikel": "Art. 10"},
+      {"document": "STAT", "artikel": "Art. 10 lid 2"},
+      {"document": "STAT", "artikel": "Art. 10 lid 4"}
+    ],
+    "BEEIN-004": [{"document": "STAT", "artikel": "Art. 9 lid 5"}],
+    "BEEIN-005": [{"document": "HR", "artikel": "Art. 12"}],
+    "BEEIN-007": [
+      {"document": "STAT", "artikel": "Art. 5 lid 5"},
+      {"document": "STAT", "artikel": "Art. 10 lid 4"},
+      {"document": "HR", "artikel": "Art. 15"}
+    ],
+    "ESC-002": [{"document": "HR", "artikel": "Art. 5"}],
+    "ESC-004": [{"document": "HR", "artikel": "Art. 3 lid 8"}],
+    "ESC-005": [{"document": "HR", "artikel": "Art. 14"}],
+    "ESC-006": [
+      {"document": "TR", "artikel": "Volledig"},
+      {"document": "RGM", "artikel": "Art. 12"}
+    ]
+  }
+}

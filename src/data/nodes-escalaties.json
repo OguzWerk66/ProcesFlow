@@ -1,0 +1,455 @@
+{
+  "nodes": [
+    {
+      "id": "ESC-001",
+      "titel": "Escalatie: Ontbrekende informatie timeout",
+      "korteBeschrijving": "Escalatie wanneer informatie te lang uitblijft",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "escalatie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Beoordeelt escalatie" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "C", "toelichting": "Probeert contact te leggen" }
+      ],
+      "trigger": "Aanvraag >30 dagen zonder reactie ondanks herinneringen",
+      "inputs": [
+        "Aanvraagdossier met communicatiehistorie"
+      ],
+      "acties": [
+        "Beoordeel of extra inspanning zinvol is",
+        "Schakel eventueel regiomanager in voor telefonisch contact",
+        "Neem besluit: laatste poging of afsluiten"
+      ],
+      "outputs": [
+        "Besluit tot laatste poging OF aanvraag sluiten"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-007",
+          "conditie": "Besluit tot afsluiten",
+          "overdracht": "Aanvraag voor sluiting"
+        },
+        {
+          "naarNode": "AANV-002",
+          "conditie": "Informatie alsnog ontvangen",
+          "overdracht": "Aanvraag terug naar compleetheidscheck"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Escalatie loggen", "veld": "Case", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "senior-ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "escalaties",
+      "tags": ["escalatie", "timeout", "informatie"]
+    },
+    {
+      "id": "ESC-002",
+      "titel": "Escalatie: Ex-lid met openstaande schuld",
+      "korteBeschrijving": "Afhandeling wanneer ex-lid opnieuw lid wil worden met openstaande schuld",
+      "klantreisStatus": "lead",
+      "procesFase": "escalatie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "credit-controller", "afdeling": "finance", "type": "R", "toelichting": "Beoordeelt schuldpositie" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Besluit over toelating" }
+      ],
+      "trigger": "Nieuwe lead blijkt ex-lid met openstaande vordering",
+      "inputs": [
+        "Debiteurendossier ex-lid",
+        "Nieuwe aanvraag/interesse"
+      ],
+      "acties": [
+        "Stel overzicht openstaande vorderingen op",
+        "Beoordeel of incasso nog loopt",
+        "Bepaal voorwaarden voor eventuele toelating (schuld eerst voldoen)",
+        "Communiceer voorwaarden aan prospect"
+      ],
+      "outputs": [
+        "Voorwaarden voor hernieuwde toelating vastgesteld"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "LEAD-002",
+          "conditie": "Schuld voldaan, kwalificatie kan starten",
+          "overdracht": "Lead record voor normale procedure"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "ESC-002-U1",
+          "conditie": "Betwiste vordering",
+          "actie": "Doorverwijzen naar Legal",
+          "verantwoordelijke": "credit-controller",
+          "escaleertNaar": "ESC-003"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Blokkade registreren", "veld": "Account - Block Reason", "verplicht": true },
+        { "systeem": "exact", "actie": "Schuldoverzicht genereren", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 5",
+          "omschrijving": "Voorwaarden heraansluiting"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "credit-controller",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "escalaties",
+      "tags": ["escalatie", "schuld", "ex-lid"]
+    },
+    {
+      "id": "ESC-003",
+      "titel": "Escalatie: Juridische beoordeling",
+      "korteBeschrijving": "Juridische toets bij complexe of gevoelige situaties",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "escalatie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "legal",
+      "raci": [
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "R", "toelichting": "Voert juridische toets uit" },
+        { "rol": "compliance-officer", "afdeling": "legal", "type": "C", "toelichting": "Adviseert over compliance" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Neemt besluit" }
+      ],
+      "trigger": "Aanvraag of situatie met juridische complexiteit of risico's",
+      "inputs": [
+        "Dossier met casus en vraagstelling",
+        "Relevante documenten en historie"
+      ],
+      "acties": [
+        "Analyseer juridische aspecten",
+        "Toets aan statuten, reglementen en wet",
+        "Stel advies op met risico-inschatting",
+        "Leg advies voor aan directeur voor besluit"
+      ],
+      "outputs": [
+        "Juridisch advies met aanbeveling",
+        "Besluit directeur"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen",
+        "maximum": "20 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-003",
+          "conditie": "Groen licht voor verdere beoordeling",
+          "overdracht": "Aanvraag terug naar inhoudelijke beoordeling"
+        },
+        {
+          "naarNode": "AANV-005",
+          "conditie": "Advies tot afwijzing",
+          "overdracht": "Aanvraag naar afwijzingsprocedure"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "ESC-003-U1",
+          "conditie": "Extern juridisch advies nodig",
+          "actie": "Schakel externe advocaat in na akkoord directeur",
+          "verantwoordelijke": "juridisch-adviseur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "sharepoint", "actie": "Juridisch dossier aanmaken", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Escalatie en advies loggen", "veld": "Case", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "juridisch-adviseur",
+        "eigenaarAfdeling": "legal",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "escalaties",
+      "tags": ["escalatie", "juridisch", "advies"]
+    },
+    {
+      "id": "ESC-004",
+      "titel": "Escalatie: Contributie bezwaar",
+      "korteBeschrijving": "Behandeling van bezwaren tegen contributiehoogte",
+      "klantreisStatus": "lid",
+      "procesFase": "escalatie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "credit-controller", "afdeling": "finance", "type": "R", "toelichting": "Beoordeelt bezwaar" },
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "C", "toelichting": "Adviseert bij principiële bezwaren" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Besluit bij coulance" }
+      ],
+      "trigger": "Lid maakt bezwaar tegen contributiefactuur",
+      "inputs": [
+        "Bezwaarschrift lid",
+        "Factuur en onderliggende berekening"
+      ],
+      "acties": [
+        "Controleer of factuur correct is berekend",
+        "Analyseer bezwaar: feitelijk of principieel",
+        "Bij fout: corrigeer factuur",
+        "Bij principieel bezwaar: leg voor aan Legal/Directeur",
+        "Communiceer uitkomst naar lid"
+      ],
+      "outputs": [
+        "Bezwaar afgewikkeld: factuur gecorrigeerd, coulance verleend, of bezwaar afgewezen"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen",
+        "maximum": "20 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-001",
+          "conditie": "Correctie doorgevoerd",
+          "overdracht": "Gecorrigeerde factuur"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Bezwaar registreren", "veld": "Case", "verplicht": true },
+        { "systeem": "exact", "actie": "Eventuele creditnota boeken", "verplicht": false }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3 lid 8",
+          "omschrijving": "Bezwaarprocedure contributie"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "credit-controller",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "escalaties",
+      "tags": ["escalatie", "contributie", "bezwaar"]
+    },
+    {
+      "id": "ESC-005",
+      "titel": "Escalatie: Klacht of conflict",
+      "korteBeschrijving": "Behandeling van klachten over de vereniging of conflicten tussen leden",
+      "klantreisStatus": "lid",
+      "procesFase": "escalatie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "legal",
+      "raci": [
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "R", "toelichting": "Coördineert klachtbehandeling" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Eindverantwoordelijk" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "I", "toelichting": "Wordt geïnformeerd" }
+      ],
+      "trigger": "Klacht ontvangen van lid of derde over vereniging/lid",
+      "inputs": [
+        "Klachtformulering",
+        "Eventueel bewijsmateriaal"
+      ],
+      "acties": [
+        "Registreer klacht",
+        "Bepaal type klacht (over vereniging / over lid / tuchtrechtelijk)",
+        "Informeer beklaagde indien van toepassing",
+        "Onderzoek klacht",
+        "Stel reactie/oplossing voor",
+        "Bij tuchtrecht: doorverwijzen naar tuchtcommissie"
+      ],
+      "outputs": [
+        "Klacht afgehandeld met conclusie en eventuele maatregelen"
+      ],
+      "doorlooptijd": {
+        "standaard": "Eerste reactie binnen 5 werkdagen, afhandeling binnen 30 werkdagen",
+        "maximum": "60 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "ESC-006",
+          "conditie": "Klacht betreft tuchtrechtelijke kwestie",
+          "overdracht": "Dossier naar tuchtcommissie"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "ESC-005-U1",
+          "conditie": "Klacht over directie of bestuur",
+          "actie": "Extern onafhankelijk onderzoek inschakelen",
+          "verantwoordelijke": "bestuurslid"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Klacht registreren", "veld": "Case - Complaint", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Klachtdossier aanmaken", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 14",
+          "omschrijving": "Klachtenregeling"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "juridisch-adviseur",
+        "eigenaarAfdeling": "legal",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "escalaties",
+      "tags": ["klacht", "conflict", "escalatie"]
+    },
+    {
+      "id": "ESC-006",
+      "titel": "Tuchtrechtprocedure",
+      "korteBeschrijving": "Behandeling van tuchtrechtelijke klachten tegen leden/gildeleden",
+      "klantreisStatus": "lid",
+      "procesFase": "escalatie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "legal",
+      "raci": [
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "R", "toelichting": "Ambtelijke ondersteuning tuchtcommissie" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "I", "toelichting": "Wordt geïnformeerd over uitspraken" }
+      ],
+      "trigger": "Tuchtklacht ingediend bij tuchtcommissie",
+      "inputs": [
+        "Tuchtklacht met onderbouwing",
+        "Verweer beklaagde"
+      ],
+      "acties": [
+        "Registreer klacht bij tuchtcommissie",
+        "Ondersteun tuchtcommissie administratief",
+        "Zorg voor hoor en wederhoor",
+        "Verzorg uitnodigingen hoorzitting",
+        "Leg uitspraak vast en communiceer",
+        "Volg uitvoering maatregelen op"
+      ],
+      "outputs": [
+        "Tuchtuitspraak met eventuele maatregel (waarschuwing, berisping, schorsing, ontzetting)"
+      ],
+      "doorlooptijd": {
+        "standaard": "90 werkdagen",
+        "maximum": "180 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-003",
+          "conditie": "Maatregel is ontzetting uit gilde/lidmaatschap",
+          "overdracht": "Dossier voor uitvoering ontzetting"
+        },
+        {
+          "naarNode": "GILDE-004",
+          "conditie": "Maatregel is beëindiging gildelidmaatschap",
+          "overdracht": "Dossier voor beëindiging gilde"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "sharepoint", "actie": "Tuchtdossier beheren", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Tuchtmaatregel registreren", "veld": "Account/Contact - Disciplinary", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Tuchtreglement",
+          "artikel": "Volledig",
+          "omschrijving": "Procedure en maatregelen tuchtrecht"
+        },
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 12",
+          "omschrijving": "Tuchtrechtelijke bepalingen gilde"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "juridisch-adviseur",
+        "eigenaarAfdeling": "legal",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "tuchtrecht",
+      "tags": ["tuchtrecht", "disciplinair", "sanctie"]
+    },
+    {
+      "id": "ESC-007",
+      "titel": "Escalatie: Betalingsregeling",
+      "korteBeschrijving": "Opstellen van betalingsregeling bij financiële problemen lid",
+      "klantreisStatus": "lid",
+      "procesFase": "escalatie",
+      "casusType": "escalatie",
+      "primaireAfdeling": "finance",
+      "raci": [
+        { "rol": "credit-controller", "afdeling": "finance", "type": "R", "toelichting": "Stelt regeling op" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Accordeert regeling" }
+      ],
+      "trigger": "Lid verzoekt om betalingsregeling / signaal financiële problemen",
+      "inputs": [
+        "Verzoek lid met onderbouwing",
+        "Openstaande vorderingen"
+      ],
+      "acties": [
+        "Beoordeel verzoek en financiële situatie",
+        "Stel voorstel betalingsregeling op",
+        "Leg voor aan directeur voor akkoord",
+        "Bij akkoord: formaliseer regeling schriftelijk",
+        "Monitor nakoming regeling"
+      ],
+      "outputs": [
+        "Betalingsregeling overeengekomen en vastgelegd"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen",
+        "maximum": "15 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "CONTR-005",
+          "conditie": "Regeling wordt niet nagekomen",
+          "overdracht": "Dossier voor incassoprocedure"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "exact", "actie": "Betalingsregeling vastleggen", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Regeling registreren", "veld": "Account - Payment Plan", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "credit-controller",
+        "eigenaarAfdeling": "finance",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "escalaties",
+      "tags": ["betalingsregeling", "financieel", "escalatie"]
+    }
+  ]
+}

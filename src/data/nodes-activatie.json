@@ -1,0 +1,281 @@
+{
+  "nodes": [
+    {
+      "id": "ACT-001",
+      "titel": "Activatie lidmaatschap",
+      "korteBeschrijving": "Formele activatie van het lidmaatschap na betaling entreegeld",
+      "klantreisStatus": "lid",
+      "procesFase": "activatie",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Activeert lidmaatschap" },
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "C", "toelichting": "Bevestigt ontvangst betaling" },
+        { "rol": "functioneel-beheerder", "afdeling": "it", "type": "I", "toelichting": "Wordt geïnformeerd voor account aanmaak" }
+      ],
+      "trigger": "Betaling entreegeld ontvangen en gematcht",
+      "inputs": [
+        "Betalingsbevestiging entreegeld",
+        "Goedgekeurde aanvraag"
+      ],
+      "acties": [
+        "Zet lidmaatschapsstatus op 'Actief'",
+        "Ken lidmaatschapsnummer toe",
+        "Registreer ingangsdatum lidmaatschap",
+        "Maak gildelidmaatschappen aan voor aangemelde personen",
+        "Trigger account aanmaak in ledenportaal",
+        "Trigger factuur jaarcontributie (naar rato indien tussentijds)"
+      ],
+      "outputs": [
+        "Lidmaatschap geactiveerd",
+        "Lidmaatschapsnummer toegekend",
+        "Gildelidmaatschappen aangemaakt"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 1 werkdag na betalingsontvangst",
+        "maximum": "2 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "ACT-002",
+          "overdracht": "Lid record voor welkomstcommunicatie"
+        },
+        {
+          "naarNode": "CONTR-001",
+          "overdracht": "Lid record voor contributie facturatie"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "ACT-001-U1",
+          "conditie": "Betaling komt niet overeen met factuurbedrag",
+          "actie": "Onderzoek verschil, neem contact op met lid",
+          "verantwoordelijke": "financieel-medewerker"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Actief lid", "veld": "Account Status", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Lidmaatschapsnummer toekennen", "veld": "Member Number", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Ingangsdatum registreren", "veld": "Membership Start Date", "verplicht": true },
+        { "systeem": "website", "actie": "Account aanmaken in ledenportaal", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 6 lid 1",
+          "omschrijving": "Aanvang lidmaatschap"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["activatie", "lidmaatschap", "portal"]
+    },
+    {
+      "id": "ACT-002",
+      "titel": "Welkomstcommunicatie",
+      "korteBeschrijving": "Versturen welkomstpakket en inloggegevens aan nieuw lid",
+      "klantreisStatus": "lid",
+      "procesFase": "onboarding",
+      "casusType": "standaard",
+      "primaireAfdeling": "marcom",
+      "raci": [
+        { "rol": "communicatieadviseur", "afdeling": "marcom", "type": "R", "toelichting": "Verstuurt welkomstpakket" },
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "C", "toelichting": "Levert lidgegevens aan" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "I", "toelichting": "Wordt geïnformeerd over activatie" }
+      ],
+      "trigger": "Lidmaatschap geactiveerd",
+      "inputs": [
+        "Lid record met contactgegevens",
+        "Inloggegevens ledenportaal"
+      ],
+      "acties": [
+        "Verstuur welkomstmail met inloggegevens",
+        "Verstuur fysiek welkomstpakket (optioneel)",
+        "Informeer over voordelen lidmaatschap",
+        "Nodig uit voor introductiebijeenkomst",
+        "Plaats vermelding op ledenlijst website"
+      ],
+      "outputs": [
+        "Welkomstmail verzonden",
+        "Welkomstpakket verstuurd",
+        "Lid zichtbaar op website"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 2 werkdagen na activatie",
+        "maximum": "5 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "ACT-003",
+          "overdracht": "Lid record voor persoonlijke kennismaking"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "ACT-002-U1",
+          "conditie": "Lid wil niet op openbare ledenlijst",
+          "actie": "Respecteer wens, documenteer in systeem",
+          "verantwoordelijke": "communicatieadviseur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "email", "actie": "Welkomstmail versturen", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Onboarding taak aanmaken", "veld": "Task", "verplicht": true },
+        { "systeem": "website", "actie": "Publiceren op ledenlijst", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "communicatieadviseur",
+        "eigenaarAfdeling": "marcom",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["welkom", "onboarding", "communicatie"]
+    },
+    {
+      "id": "ACT-003",
+      "titel": "Persoonlijke kennismaking",
+      "korteBeschrijving": "Regiomanager maakt persoonlijk kennis met nieuw lid",
+      "klantreisStatus": "lid",
+      "procesFase": "onboarding",
+      "casusType": "standaard",
+      "primaireAfdeling": "sales",
+      "raci": [
+        { "rol": "regiomanager", "afdeling": "sales", "type": "R", "toelichting": "Voert kennismakingsgesprek" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "A", "toelichting": "Verantwoordelijk voor relatie" }
+      ],
+      "trigger": "Lid geactiveerd en welkomstmail ontvangen",
+      "inputs": [
+        "Lid record met achtergrond en gilden"
+      ],
+      "acties": [
+        "Plan kennismakingsgesprek (binnen 30 dagen na activatie)",
+        "Bespreek verwachtingen lid",
+        "Leg uit hoe vereniging werkt",
+        "Introduceer bij relevante gilde-activiteiten",
+        "Leg afspraken vast"
+      ],
+      "outputs": [
+        "Kennismaking afgerond",
+        "Eventuele actiepunten genoteerd"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 30 dagen na activatie",
+        "maximum": "45 dagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "LID-001",
+          "overdracht": "Lid in regulier bestandsbeheer"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "ACT-003-U1",
+          "conditie": "Lid is niet bereikbaar voor kennismaking",
+          "actie": "Probeer minimaal 3x, daarna mail sturen met contactaanbod",
+          "verantwoordelijke": "regiomanager"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Kennismaking loggen", "veld": "Activity", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Gespreksnotities vastleggen", "veld": "Notes", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "regiomanager",
+        "eigenaarAfdeling": "sales",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["kennismaking", "relatiebeheer", "onboarding"]
+    },
+    {
+      "id": "ACT-004",
+      "titel": "Gildelid activatie",
+      "korteBeschrijving": "Activatie van individuele gildeleden binnen het lidmaatschap",
+      "klantreisStatus": "lid",
+      "procesFase": "activatie",
+      "casusType": "standaard",
+      "primaireAfdeling": "gilde-organisatie",
+      "raci": [
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "R", "toelichting": "Activeert gildelid" },
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "C", "toelichting": "Levert basisgegevens" }
+      ],
+      "trigger": "Lidmaatschap geactiveerd met gildeleden",
+      "inputs": [
+        "Gegevens gildelid (naam, functie, diploma's)",
+        "Bewijsstukken vakbekwaamheid"
+      ],
+      "acties": [
+        "Controleer of gildelid aan toelatingseisen voldoet",
+        "Activeer gildelidmaatschap",
+        "Maak account aan in PE-portaal",
+        "Informeer gildelid over PE-verplichtingen",
+        "Voeg toe aan gilde-mailinglijst"
+      ],
+      "outputs": [
+        "Gildelidmaatschap geactiveerd",
+        "PE-portaal account aangemaakt"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 3 werkdagen na activatie lid",
+        "maximum": "5 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "GILDE-002",
+          "overdracht": "Gildelid record voor PE-monitoring"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "ACT-004-U1",
+          "conditie": "Gildelid voldoet niet aan toelatingseisen",
+          "actie": "Informeer lid, vraag aanvullende documenten of pas gilde aan",
+          "verantwoordelijke": "ambtelijk-secretaris"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Gildelidmaatschap aanmaken", "veld": "Guild Membership object", "verplicht": true },
+        { "systeem": "pe-portaal", "actie": "Account aanmaken", "verplicht": true },
+        { "systeem": "email", "actie": "Welkomstmail gildelid versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 4",
+          "omschrijving": "Toelatingseisen gildeleden"
+        },
+        {
+          "document": "Reglement Gilde Taxateurs",
+          "artikel": "Art. 4",
+          "omschrijving": "Toelatingseisen gildeleden"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ambtelijk-secretaris",
+        "eigenaarAfdeling": "gilde-organisatie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["gildelid", "activatie", "PE"]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "modules": [
+    {
+      "id": "basis",
+      "naam": "Basisproces Lidmaatschap",
+      "beschrijving": "Kernprocessen voor alle leden: aanvraag, activatie, contributie, beëindiging",
+      "actief": true,
+      "versie": "1.0.0"
+    },
+    {
+      "id": "gilde-makelaars",
+      "naam": "Gilde Makelaars",
+      "beschrijving": "Specifieke processen voor het Gilde van Makelaars",
+      "actief": true,
+      "afhankelijkheden": ["basis"],
+      "versie": "1.0.0"
+    },
+    {
+      "id": "gilde-taxateurs",
+      "naam": "Gilde Taxateurs",
+      "beschrijving": "Specifieke processen voor het Gilde van Taxateurs",
+      "actief": true,
+      "afhankelijkheden": ["basis"],
+      "versie": "1.0.0"
+    },
+    {
+      "id": "gilde-vastgoedmanagers",
+      "naam": "Gilde Vastgoedmanagers",
+      "beschrijving": "Specifieke processen voor het Gilde van Vastgoedmanagers",
+      "actief": false,
+      "afhankelijkheden": ["basis"],
+      "versie": "1.0.0"
+    },
+    {
+      "id": "tuchtrecht",
+      "naam": "Tuchtrecht & Geschillen",
+      "beschrijving": "Processen voor klachten, tuchtrecht en geschillenbeslechting",
+      "actief": true,
+      "afhankelijkheden": ["basis"],
+      "versie": "1.0.0"
+    },
+    {
+      "id": "escalaties",
+      "naam": "Escalaties & Uitzonderingen",
+      "beschrijving": "Afhandeling van bijzondere situaties en escalaties",
+      "actief": true,
+      "afhankelijkheden": ["basis"],
+      "versie": "1.0.0"
+    }
+  ],
+  "swimlanes": [
+    { "id": "klantreis", "type": "klantreis", "label": "Klantreisstatus", "volgorde": 0, "kleur": "#E3F2FD" },
+    { "id": "sales", "type": "afdeling", "label": "Sales", "volgorde": 1, "kleur": "#FFF3E0" },
+    { "id": "ledenadministratie", "type": "afdeling", "label": "Ledenadministratie", "volgorde": 2, "kleur": "#E8F5E9" },
+    { "id": "legal", "type": "afdeling", "label": "Legal", "volgorde": 3, "kleur": "#FCE4EC" },
+    { "id": "finance", "type": "afdeling", "label": "Finance", "volgorde": 4, "kleur": "#F3E5F5" },
+    { "id": "marcom", "type": "afdeling", "label": "MarCom", "volgorde": 5, "kleur": "#E0F7FA" },
+    { "id": "gilde-organisatie", "type": "afdeling", "label": "Gilde-organisatie", "volgorde": 6, "kleur": "#FFF8E1" },
+    { "id": "events-opleidingen", "type": "afdeling", "label": "Events & Opleidingen", "volgorde": 7, "kleur": "#EFEBE9" },
+    { "id": "it", "type": "afdeling", "label": "IT", "volgorde": 8, "kleur": "#ECEFF1" },
+    { "id": "bestuur", "type": "afdeling", "label": "Bestuur", "volgorde": 9, "kleur": "#FFEBEE" }
+  ]
+}

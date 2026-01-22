@@ -1,0 +1,529 @@
+{
+  "nodes": [
+    {
+      "id": "BEEIN-001",
+      "titel": "Opzegging door lid",
+      "korteBeschrijving": "Verwerking van opzegging lidmaatschap door het lid zelf",
+      "klantreisStatus": "opzegger",
+      "procesFase": "beeindiging",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Verwerkt opzegging" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "I", "toelichting": "Wordt geïnformeerd" },
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "C", "toelichting": "Berekent financiële afwikkeling" }
+      ],
+      "trigger": "Schriftelijke opzegging ontvangen van lid",
+      "inputs": [
+        "Opzeggingsbrief (per post of email)",
+        "Lidmaatschapsgegevens"
+      ],
+      "acties": [
+        "Controleer of opzegging aan vormvereisten voldoet (schriftelijk, ondertekend door bevoegd persoon)",
+        "Bepaal opzegdatum conform statuten (einde boekjaar met opzegtermijn)",
+        "Bereken eventuele restituties of nabetaling contributie",
+        "Verstuur ontvangstbevestiging met einddatum",
+        "Informeer regiomanager voor eventueel exit-gesprek"
+      ],
+      "outputs": [
+        "Opzegging geregistreerd",
+        "Einddatum vastgesteld",
+        "Ontvangstbevestiging verzonden"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-005",
+          "conditie": "Einddatum bereikt",
+          "overdracht": "Lid record voor definitieve afmelding"
+        },
+        {
+          "naarNode": "BEEIN-006",
+          "conditie": "Lid wil exit-gesprek",
+          "overdracht": "Lid record voor exit-gesprek"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "BEEIN-001-U1",
+          "conditie": "Opzegging niet correct ondertekend",
+          "actie": "Verzoek om correcte ondertekening",
+          "verantwoordelijke": "ledenadministrateur"
+        },
+        {
+          "id": "BEEIN-001-U2",
+          "conditie": "Lid heeft openstaande schulden",
+          "actie": "Informeer dat schulden moeten worden voldaan",
+          "verantwoordelijke": "ledenadministrateur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Opgezegd", "veld": "Account Status", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Einddatum registreren", "veld": "Membership End Date", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Opzeggingsbrief archiveren", "verplicht": true },
+        { "systeem": "email", "actie": "Bevestiging versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 9 lid 1",
+          "omschrijving": "Opzegging door lid"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 9 lid 2",
+          "omschrijving": "Opzegtermijn en einddatum"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["opzegging", "beëindiging", "lid"]
+    },
+    {
+      "id": "BEEIN-002",
+      "titel": "Opzegging namens vereniging",
+      "korteBeschrijving": "Opzegging van lidmaatschap door de vereniging",
+      "klantreisStatus": "opzegger",
+      "procesFase": "beeindiging",
+      "casusType": "uitzondering",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Bereidt opzegging voor" },
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "C", "toelichting": "Toetst juridische gronden" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Besluit tot opzegging" }
+      ],
+      "trigger": "Lid voldoet niet meer aan lidmaatschapsvereisten / redelijkerwijs niet te vergen voortzetting",
+      "inputs": [
+        "Dossier met onderbouwing gronden voor opzegging",
+        "Juridisch advies"
+      ],
+      "acties": [
+        "Stel dossier samen met onderbouwing",
+        "Vraag juridisch advies",
+        "Leg voorstel voor aan directeur",
+        "Bij akkoord: stel opzeggingsbrief op met motivering",
+        "Verstuur brief aangetekend met beroepsmogelijkheid"
+      ],
+      "outputs": [
+        "Opzeggingsbrief verzonden",
+        "Lid geïnformeerd over beroepsmogelijkheid"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 15 werkdagen na besluit",
+        "maximum": "20 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-005",
+          "conditie": "Geen beroep binnen termijn",
+          "overdracht": "Lid record voor definitieve afmelding"
+        },
+        {
+          "naarNode": "BEEIN-007",
+          "conditie": "Lid tekent beroep aan",
+          "overdracht": "Beroepsdossier voor behandeling"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Opgezegd door vereniging", "veld": "Account Status", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Dossier archiveren", "verplicht": true },
+        { "systeem": "email", "actie": "Aangetekende brief versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 9 lid 3",
+          "omschrijving": "Opzegging namens vereniging"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 9 lid 4",
+          "omschrijving": "Gronden voor opzegging door vereniging"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "senior-ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["opzegging", "vereniging", "beëindiging"]
+    },
+    {
+      "id": "BEEIN-003",
+      "titel": "Ontzetting",
+      "korteBeschrijving": "Royement van lid wegens ernstige verwijtbare gedragingen",
+      "klantreisStatus": "opzegger",
+      "procesFase": "beeindiging",
+      "casusType": "escalatie",
+      "primaireAfdeling": "legal",
+      "raci": [
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "R", "toelichting": "Bereidt ontzettingsprocedure voor" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Neemt besluit tot ontzetting" },
+        { "rol": "bestuurslid", "afdeling": "bestuur", "type": "C", "toelichting": "Wordt geconsulteerd" }
+      ],
+      "trigger": "Ernstige schending statuten/reglementen, schade aan vereniging, tuchtrechtelijke veroordeling",
+      "inputs": [
+        "Dossier met bewijsmateriaal",
+        "Eventueel tuchtrechtelijk vonnis",
+        "Eerdere waarschuwingen indien van toepassing"
+      ],
+      "acties": [
+        "Stel compleet dossier samen",
+        "Stel lid in gelegenheid tot hoor en wederhoor",
+        "Beoordeel reactie lid",
+        "Leg besluit voor aan bestuur",
+        "Bij besluit tot ontzetting: verstuur aangetekende kennisgeving met motivering",
+        "Informeer over beroepsmogelijkheid (ALV)"
+      ],
+      "outputs": [
+        "Ontzettingsbesluit genomen",
+        "Lid geïnformeerd",
+        "Onmiddellijke beëindiging lidmaatschapsrechten"
+      ],
+      "doorlooptijd": {
+        "standaard": "Totale procedure: 30 werkdagen",
+        "maximum": "45 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-005",
+          "conditie": "Geen beroep binnen termijn",
+          "overdracht": "Ex-lid record voor administratieve afwikkeling"
+        },
+        {
+          "naarNode": "BEEIN-007",
+          "conditie": "Lid gaat in beroep bij ALV",
+          "overdracht": "Beroepsdossier voor ALV-behandeling"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "BEEIN-003-U1",
+          "conditie": "Spoedeisende situatie (ernstige reputatieschade)",
+          "actie": "Onmiddellijke schorsing hangende procedure",
+          "verantwoordelijke": "directeur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Ontzet", "veld": "Account Status", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Ontzettingsdossier archiveren", "verplicht": true },
+        { "systeem": "website", "actie": "Onmiddellijk verwijderen van alle vermeldingen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 10",
+          "omschrijving": "Ontzetting uit lidmaatschap"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 10 lid 2",
+          "omschrijving": "Gronden voor ontzetting"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 10 lid 4",
+          "omschrijving": "Beroep bij ALV"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "juridisch-adviseur",
+        "eigenaarAfdeling": "legal",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["ontzetting", "royement", "sanctie", "escalatie"]
+    },
+    {
+      "id": "BEEIN-004",
+      "titel": "Overlijden / opheffing rechtspersoon",
+      "korteBeschrijving": "Beëindiging door overlijden of opheffing van het lid",
+      "klantreisStatus": "ex-lid",
+      "procesFase": "beeindiging",
+      "casusType": "uitzondering",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Verwerkt beëindiging" },
+        { "rol": "financieel-medewerker", "afdeling": "finance", "type": "C", "toelichting": "Regelt financiële afwikkeling" }
+      ],
+      "trigger": "Bericht van overlijden / uitschrijving KvK",
+      "inputs": [
+        "Overlijdensbericht of KvK-uittreksel met uitschrijving"
+      ],
+      "acties": [
+        "Registreer beëindiging met reden",
+        "Regel eventuele financiële afwikkeling met erfgenamen/vereffenaar",
+        "Update alle systemen",
+        "Verstuur indien gepast condoleancekaart"
+      ],
+      "outputs": [
+        "Lidmaatschap beëindigd",
+        "Financiële afwikkeling in gang gezet"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-005",
+          "overdracht": "Ex-lid record voor archivering"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "BEEIN-004-U1",
+          "conditie": "Voortzetting door erfgenamen gewenst",
+          "actie": "Beoordeel of erfgenamen aan lidmaatschapseisen voldoen",
+          "verantwoordelijke": "senior-ledenadministrateur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Beëindigd - overlijden/opheffing", "veld": "Account Status", "verplicht": true },
+        { "systeem": "exact", "actie": "Openstaande posten afboeken indien nodig", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 9 lid 5",
+          "omschrijving": "Beëindiging door overlijden"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["overlijden", "opheffing", "beëindiging"]
+    },
+    {
+      "id": "BEEIN-005",
+      "titel": "Definitieve afmelding",
+      "korteBeschrijving": "Administratieve afronding van beëindigd lidmaatschap",
+      "klantreisStatus": "ex-lid",
+      "procesFase": "beeindiging",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Rondt afmelding af" },
+        { "rol": "functioneel-beheerder", "afdeling": "it", "type": "C", "toelichting": "Deactiveert accounts" },
+        { "rol": "communicatieadviseur", "afdeling": "marcom", "type": "I", "toelichting": "Verwijdert van externe lijsten" }
+      ],
+      "trigger": "Einddatum lidmaatschap bereikt / ontzetting definitief",
+      "inputs": [
+        "Ex-lid record met einddatum",
+        "Bevestiging dat financiële zaken zijn afgewikkeld"
+      ],
+      "acties": [
+        "Zet definitieve status 'Ex-lid' in systeem",
+        "Deactiveer alle portaalaccounts (leden, PE)",
+        "Verwijder van website ledenlijst",
+        "Verwijder van alle mailinglijsten (behalve alumni indien gewenst)",
+        "Archiveer dossier conform bewaartermijnen"
+      ],
+      "outputs": [
+        "Lidmaatschap volledig afgewikkeld",
+        "Alle accounts gedeactiveerd",
+        "Dossier gearchiveerd"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 5 werkdagen na einddatum",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Ex-lid", "veld": "Account Status", "verplicht": true },
+        { "systeem": "website", "actie": "Account deactiveren", "verplicht": true },
+        { "systeem": "pe-portaal", "actie": "Alle accounts deactiveren", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Dossier archiveren", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 12",
+          "omschrijving": "Bewaartermijnen dossiers"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["afmelding", "archivering", "accounts"]
+    },
+    {
+      "id": "BEEIN-006",
+      "titel": "Exit-gesprek",
+      "korteBeschrijving": "Gesprek met opzeggende leden om reden te achterhalen",
+      "klantreisStatus": "opzegger",
+      "procesFase": "beeindiging",
+      "casusType": "standaard",
+      "primaireAfdeling": "sales",
+      "raci": [
+        { "rol": "regiomanager", "afdeling": "sales", "type": "R", "toelichting": "Voert exit-gesprek" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "I", "toelichting": "Ontvangt rapportage" }
+      ],
+      "trigger": "Opzegging ontvangen / lid geeft aan bereid te zijn tot gesprek",
+      "inputs": [
+        "Opzegging met initiële reden",
+        "Lidmaatschapshistorie"
+      ],
+      "acties": [
+        "Plan exit-gesprek met opzegger",
+        "Voer gesprek over redenen opzegging",
+        "Registreer feedback",
+        "Beoordeel of retentie mogelijk is",
+        "Rapporteer trends aan management"
+      ],
+      "outputs": [
+        "Exit-feedback geregistreerd",
+        "Eventueel: lid trekt opzegging in"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 10 werkdagen na opzegging",
+        "maximum": "Voor einddatum lidmaatschap"
+      },
+      "handovers": [
+        {
+          "naarNode": "LID-001",
+          "conditie": "Lid trekt opzegging in",
+          "overdracht": "Lid record terug in regulier beheer"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Exit-feedback vastleggen", "veld": "Exit Interview object", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "regiomanager",
+        "eigenaarAfdeling": "sales",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["exit", "retentie", "feedback"]
+    },
+    {
+      "id": "BEEIN-007",
+      "titel": "Beroepsprocedure",
+      "korteBeschrijving": "Behandeling van beroep tegen afwijzing, opzegging of ontzetting",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "beeindiging",
+      "casusType": "escalatie",
+      "primaireAfdeling": "legal",
+      "raci": [
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "R", "toelichting": "Coördineert beroepsprocedure" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Behandelt beroep (tenzij ALV)" },
+        { "rol": "bestuurslid", "afdeling": "bestuur", "type": "C", "toelichting": "Adviseert bij beroep" }
+      ],
+      "trigger": "Beroepschrift ontvangen binnen gestelde termijn",
+      "inputs": [
+        "Beroepschrift met motivering",
+        "Origineel besluit met onderbouwing",
+        "Eventueel aanvullend bewijsmateriaal"
+      ],
+      "acties": [
+        "Controleer ontvankelijkheid beroep (termijn, vormvereisten)",
+        "Stel verweer/reactie op namens bestuur",
+        "Plan hoorzitting indien van toepassing",
+        "Bereid dossier voor besluitvorming voor",
+        "Neem besluit op beroep (directeur of ALV afhankelijk van type)",
+        "Communiceer uitspraak schriftelijk"
+      ],
+      "outputs": [
+        "Beroep gegrond: oorspronkelijk besluit vernietigd",
+        "Beroep ongegrond: oorspronkelijk besluit gehandhaafd"
+      ],
+      "doorlooptijd": {
+        "standaard": "30 werkdagen",
+        "maximum": "60 werkdagen (bij ALV-behandeling: volgende ALV)"
+      },
+      "handovers": [
+        {
+          "naarNode": "ACT-001",
+          "conditie": "Beroep tegen afwijzing gegrond",
+          "overdracht": "Aanvrager alsnog toelaten"
+        },
+        {
+          "naarNode": "LID-001",
+          "conditie": "Beroep tegen opzegging gegrond",
+          "overdracht": "Lid terug in regulier beheer"
+        },
+        {
+          "naarNode": "BEEIN-005",
+          "conditie": "Beroep ongegrond",
+          "overdracht": "Door naar definitieve afmelding"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "BEEIN-007-U1",
+          "conditie": "Beroep te laat ingediend",
+          "actie": "Niet-ontvankelijk verklaren, motiveren",
+          "verantwoordelijke": "juridisch-adviseur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "sharepoint", "actie": "Beroepsdossier aanmaken en onderhouden", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Beroepsstatus registreren", "veld": "Appeal Status", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 5 lid 5",
+          "omschrijving": "Beroep bij afwijzing toelating"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 10 lid 4",
+          "omschrijving": "Beroep bij ontzetting"
+        },
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 15",
+          "omschrijving": "Beroepsprocedure"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "juridisch-adviseur",
+        "eigenaarAfdeling": "legal",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["beroep", "bezwaar", "procedure"]
+    }
+  ]
+}

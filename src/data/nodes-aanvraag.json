@@ -1,0 +1,496 @@
+{
+  "nodes": [
+    {
+      "id": "AANV-001",
+      "titel": "Aanvraag ontvangst",
+      "korteBeschrijving": "Ontvangst en registratie van lidmaatschapsaanvraag",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "aanvraag",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Registreert aanvraag" },
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "A", "toelichting": "Bewaakt volledigheid proces" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "I", "toelichting": "Wordt geïnformeerd over ontvangst" }
+      ],
+      "trigger": "Aanvraagformulier ontvangen (digitaal of per post)",
+      "inputs": [
+        "Ingevuld aanvraagformulier",
+        "KvK-uittreksel (niet ouder dan 3 maanden)",
+        "Gegevens contactpersoon en gildeleden"
+      ],
+      "acties": [
+        "Registreer aanvraag in Salesforce",
+        "Ken uniek aanvraagnummer toe",
+        "Verstuur ontvangstbevestiging naar aanvrager",
+        "Koppel aanvraag aan bestaande lead/prospect indien aanwezig"
+      ],
+      "outputs": [
+        "Aanvraag geregistreerd met aanvraagnummer",
+        "Ontvangstbevestiging verzonden"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 1 werkdag",
+        "maximum": "2 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-002",
+          "overdracht": "Aanvraag record voor compleetheidscheck"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "AANV-001-U1",
+          "conditie": "Aanvrager staat op zwarte lijst",
+          "actie": "Direct doorsturen naar Legal voor beoordeling",
+          "verantwoordelijke": "ledenadministrateur",
+          "escaleertNaar": "ESC-003"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Aanvraag aanmaken", "veld": "Opportunity", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Status: Aanvraag ontvangen", "veld": "Stage", "verplicht": true },
+        { "systeem": "email", "actie": "Ontvangstbevestiging versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 5 lid 1",
+          "omschrijving": "Aanvraagprocedure lidmaatschap"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["aanvraag", "ontvangst", "registratie"]
+    },
+    {
+      "id": "AANV-002",
+      "titel": "Compleetheidscheck",
+      "korteBeschrijving": "Controle of alle benodigde documenten en gegevens aanwezig zijn",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "aanvraag",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Voert compleetheidscheck uit" },
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "A", "toelichting": "Accordeert bij twijfel" }
+      ],
+      "trigger": "Aanvraag geregistreerd in systeem",
+      "inputs": [
+        "Aanvraagformulier",
+        "Bijgevoegde documenten",
+        "Checklist vereiste documenten per gilde"
+      ],
+      "acties": [
+        "Controleer of alle verplichte velden zijn ingevuld",
+        "Controleer aanwezigheid KvK-uittreksel",
+        "Controleer of KvK-uittreksel niet ouder dan 3 maanden is",
+        "Controleer per aangemeld gildelid of vereiste documenten aanwezig zijn",
+        "Controleer of ondertekening compleet is"
+      ],
+      "outputs": [
+        "Aanvraag compleet: door naar inhoudelijke beoordeling",
+        "Aanvraag incompleet: verzoek om aanvulling"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 2 werkdagen",
+        "maximum": "3 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-003",
+          "conditie": "Aanvraag is compleet",
+          "overdracht": "Complete aanvraag voor inhoudelijke beoordeling"
+        },
+        {
+          "naarNode": "AANV-006",
+          "conditie": "Aanvraag is incompleet",
+          "overdracht": "Lijst met ontbrekende documenten/gegevens"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Checklist invullen", "veld": "Custom checklist object", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Status bijwerken", "veld": "Stage", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 2 lid 3",
+          "omschrijving": "Vereiste documentatie bij aanvraag"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["compleetheidscheck", "documentatie"]
+    },
+    {
+      "id": "AANV-003",
+      "titel": "Inhoudelijke beoordeling",
+      "korteBeschrijving": "Toetsing of aanvrager voldoet aan lidmaatschapscriteria",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "beoordeling",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Beoordeelt aanvraag" },
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "C", "toelichting": "Adviseert bij twijfelgevallen" },
+        { "rol": "ambtelijk-secretaris", "afdeling": "gilde-organisatie", "type": "C", "toelichting": "Beoordeelt gilde-specifieke vereisten" }
+      ],
+      "trigger": "Aanvraag is compleet bevonden",
+      "inputs": [
+        "Complete aanvraag met documenten",
+        "Toelatingscriteria per gilde",
+        "Eventuele historie van aanvrager"
+      ],
+      "acties": [
+        "Toets of bedrijf aan basisvereisten voldoet (KvK-inschrijving, relevante activiteiten)",
+        "Controleer of bedrijf hoofdzakelijk actief is in vastgoedsector",
+        "Toets per gildelid of aan opleidingseisen wordt voldaan",
+        "Controleer eventuele negatieve historie (tuchtrecht, faillissement)",
+        "Raadpleeg Legal bij twijfelgevallen",
+        "Stel advies op voor besluit"
+      ],
+      "outputs": [
+        "Positief advies: door naar besluit toelating",
+        "Negatief advies: door naar besluit afwijzing",
+        "Onduidelijk: escalatie naar Legal/Bestuur"
+      ],
+      "doorlooptijd": {
+        "standaard": "5 werkdagen",
+        "maximum": "10 werkdagen",
+        "escalatieBij": "Complexe casus of noodzaak bestuursadvies"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-004",
+          "conditie": "Positief advies",
+          "overdracht": "Aanvraag met positief advies"
+        },
+        {
+          "naarNode": "AANV-005",
+          "conditie": "Negatief advies",
+          "overdracht": "Aanvraag met negatief advies en onderbouwing"
+        },
+        {
+          "naarNode": "ESC-003",
+          "conditie": "Twijfelgeval vereist escalatie",
+          "overdracht": "Aanvraag met vraagstelling"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "AANV-003-U1",
+          "conditie": "Gildelid heeft tuchtrechtelijk verleden bij andere organisatie",
+          "actie": "Verplichte raadpleging Legal",
+          "verantwoordelijke": "senior-ledenadministrateur",
+          "escaleertNaar": "ESC-003"
+        },
+        {
+          "id": "AANV-003-U2",
+          "conditie": "Bedrijf recent uit faillissement",
+          "actie": "Aanvullende financiële toets via Finance",
+          "verantwoordelijke": "senior-ledenadministrateur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Beoordelingsformulier invullen", "veld": "Assessment object", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Advies vastleggen", "veld": "Recommendation", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Beoordelingsdocumenten archiveren", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 4 lid 1-3",
+          "omschrijving": "Vereisten voor lidmaatschap"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 5 lid 2",
+          "omschrijving": "Beoordelingscriteria"
+        },
+        {
+          "document": "Reglement Gilde Makelaars",
+          "artikel": "Art. 3",
+          "omschrijving": "Specifieke toelatingseisen makelaars"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "senior-ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["beoordeling", "toelating", "criteria"]
+    },
+    {
+      "id": "AANV-004",
+      "titel": "Besluit toelating",
+      "korteBeschrijving": "Formeel besluit tot toelating als lid",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "beoordeling",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Formaliseert besluit" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Tekent toe bij mandaat >X euro contributie" }
+      ],
+      "trigger": "Positief advies uit inhoudelijke beoordeling",
+      "inputs": [
+        "Aanvraag met positief beoordelingsadvies"
+      ],
+      "acties": [
+        "Stel toelatingsbrief op",
+        "Bepaal ingangsdatum lidmaatschap",
+        "Bereken contributie (naar rato indien tussentijds)",
+        "Bereken entreegeld indien van toepassing",
+        "Verstuur toelatingsbrief met factuur entreegeld",
+        "Informeer Sales over toewijzing"
+      ],
+      "outputs": [
+        "Toelatingsbrief verzonden",
+        "Factuur entreegeld verzonden",
+        "Status: wacht op betaling entreegeld"
+      ],
+      "doorlooptijd": {
+        "standaard": "2 werkdagen na positief advies",
+        "maximum": "5 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "ACT-001",
+          "conditie": "Entreegeld is betaald",
+          "overdracht": "Lid record voor activatie"
+        },
+        {
+          "naarNode": "CONTR-005",
+          "conditie": "Entreegeld niet betaald binnen termijn",
+          "overdracht": "Factuur voor herinneringsprocedure"
+        }
+      ],
+      "uitzonderingen": [
+        {
+          "id": "AANV-004-U1",
+          "conditie": "Aanvrager verzoekt om gespreide betaling entreegeld",
+          "actie": "Doorverwijzen naar Finance voor betalingsregeling",
+          "verantwoordelijke": "senior-ledenadministrateur"
+        }
+      ],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Toegelaten - wacht op betaling", "veld": "Stage", "verplicht": true },
+        { "systeem": "exact", "actie": "Factuur entreegeld aanmaken", "verplicht": true },
+        { "systeem": "email", "actie": "Toelatingsbrief versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 5 lid 3",
+          "omschrijving": "Besluitvorming toelating"
+        },
+        {
+          "document": "Huishoudelijk Reglement",
+          "artikel": "Art. 3 lid 1",
+          "omschrijving": "Entreegeld"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "senior-ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["besluit", "toelating", "entreegeld"]
+    },
+    {
+      "id": "AANV-005",
+      "titel": "Besluit afwijzing",
+      "korteBeschrijving": "Formeel besluit tot afwijzing van lidmaatschapsaanvraag",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "beoordeling",
+      "casusType": "uitzondering",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "senior-ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Stelt afwijzingsbrief op" },
+        { "rol": "juridisch-adviseur", "afdeling": "legal", "type": "C", "toelichting": "Controleert juridische onderbouwing" },
+        { "rol": "directeur", "afdeling": "bestuur", "type": "A", "toelichting": "Accordeert afwijzing" }
+      ],
+      "trigger": "Negatief advies uit inhoudelijke beoordeling",
+      "inputs": [
+        "Aanvraag met negatief beoordelingsadvies",
+        "Onderbouwing afwijzingsgronden"
+      ],
+      "acties": [
+        "Stel afwijzingsbrief op met duidelijke motivering",
+        "Laat Legal de brief controleren",
+        "Laat directeur accorderen",
+        "Verstuur afwijzingsbrief aangetekend",
+        "Informeer aanvrager over beroepsmogelijkheid"
+      ],
+      "outputs": [
+        "Afwijzingsbrief verzonden",
+        "Aanvrager geïnformeerd over beroepsmogelijkheid"
+      ],
+      "doorlooptijd": {
+        "standaard": "5 werkdagen na negatief advies",
+        "maximum": "10 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "BEEIN-007",
+          "conditie": "Aanvrager stelt beroep in",
+          "overdracht": "Beroepschrift voor behandeling"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Afgewezen", "veld": "Stage", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Afwijzingsreden vastleggen", "veld": "Lost Reason", "verplicht": true },
+        { "systeem": "sharepoint", "actie": "Afwijzingsbrief archiveren", "verplicht": true }
+      ],
+      "reglementReferenties": [
+        {
+          "document": "Statuten",
+          "artikel": "Art. 5 lid 4",
+          "omschrijving": "Afwijzing en motiveringsplicht"
+        },
+        {
+          "document": "Statuten",
+          "artikel": "Art. 5 lid 5",
+          "omschrijving": "Beroepsmogelijkheid bij afwijzing"
+        }
+      ],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "senior-ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["besluit", "afwijzing", "beroep"]
+    },
+    {
+      "id": "AANV-006",
+      "titel": "Verzoek aanvulling",
+      "korteBeschrijving": "Opvragen ontbrekende documenten of gegevens bij aanvrager",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "aanvraag",
+      "casusType": "standaard",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Stuurt verzoek om aanvulling" }
+      ],
+      "trigger": "Compleetheidscheck toont ontbrekende items",
+      "inputs": [
+        "Lijst met ontbrekende documenten/gegevens"
+      ],
+      "acties": [
+        "Stel overzichtelijke mail op met ontbrekende items",
+        "Geef duidelijke deadline (14 dagen)",
+        "Verstuur mail naar aanvrager",
+        "Zet reminder in agenda"
+      ],
+      "outputs": [
+        "Verzoek om aanvulling verzonden"
+      ],
+      "doorlooptijd": {
+        "standaard": "Binnen 1 werkdag",
+        "maximum": "2 werkdagen"
+      },
+      "handovers": [
+        {
+          "naarNode": "AANV-002",
+          "conditie": "Aanvulling ontvangen",
+          "overdracht": "Aangevulde aanvraag voor hernieuwde compleetheidscheck"
+        },
+        {
+          "naarNode": "AANV-007",
+          "conditie": "Geen reactie binnen 14 dagen",
+          "overdracht": "Aanvraag voor herinnering of sluiting"
+        }
+      ],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Wacht op aanvulling", "veld": "Stage", "verplicht": true },
+        { "systeem": "salesforce", "actie": "Ontbrekende items loggen", "veld": "Notes", "verplicht": true },
+        { "systeem": "email", "actie": "Verzoek versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["aanvulling", "documentatie", "incomplete"]
+    },
+    {
+      "id": "AANV-007",
+      "titel": "Aanvraag sluiten wegens non-respons",
+      "korteBeschrijving": "Administratief sluiten van aanvraag bij uitblijven reactie",
+      "klantreisStatus": "aanvrager",
+      "procesFase": "aanvraag",
+      "casusType": "uitzondering",
+      "primaireAfdeling": "ledenadministratie",
+      "raci": [
+        { "rol": "ledenadministrateur", "afdeling": "ledenadministratie", "type": "R", "toelichting": "Sluit aanvraag" },
+        { "rol": "regiomanager", "afdeling": "sales", "type": "I", "toelichting": "Wordt geïnformeerd" }
+      ],
+      "trigger": "Geen reactie op 2e herinnering na 14 dagen",
+      "inputs": [
+        "Aanvraag met communicatiehistorie"
+      ],
+      "acties": [
+        "Verstuur sluitingsmail naar aanvrager",
+        "Informeer dat aanvraag opnieuw kan worden ingediend",
+        "Zet status op 'Gesloten - geen respons'",
+        "Informeer betrokken regiomanager"
+      ],
+      "outputs": [
+        "Aanvraag administratief gesloten"
+      ],
+      "handovers": [],
+      "uitzonderingen": [],
+      "registraties": [
+        { "systeem": "salesforce", "actie": "Status: Gesloten - geen respons", "veld": "Stage", "verplicht": true },
+        { "systeem": "email", "actie": "Sluitingsmail versturen", "verplicht": true }
+      ],
+      "reglementReferenties": [],
+      "versie": {
+        "versie": "1.0.0",
+        "eigenaar": "ledenadministrateur",
+        "eigenaarAfdeling": "ledenadministratie",
+        "aanmaakDatum": "2025-01-15",
+        "laatstGewijzigd": "2025-01-15",
+        "status": "actief"
+      },
+      "module": "basis",
+      "tags": ["sluiting", "non-respons"]
+    }
+  ]
+}
