@@ -80,14 +80,14 @@ export default function FilterCategorieEditor({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <div className="bg-gray-900 rounded-lg border border-gray-700 overflow-hidden">
       {/* Header */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-gray-800 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <h3 className="font-semibold text-gray-900">{categorie.naam}</h3>
+          <h3 className="font-semibold text-gray-100">{categorie.naam}</h3>
           <span className="text-sm text-gray-500">
             ({categorie.opties.filter(o => o.actief).length} actief)
           </span>
@@ -101,29 +101,29 @@ export default function FilterCategorieEditor({
 
       {/* Content */}
       {isExpanded && (
-        <div className="border-t border-gray-200">
+        <div className="border-t border-gray-700">
           {categorie.beschrijving && (
-            <p className="px-4 py-2 text-sm text-gray-500 bg-gray-50">
+            <p className="px-4 py-2 text-sm text-gray-500 bg-gray-800">
               {categorie.beschrijving}
             </p>
           )}
 
           {/* Opties lijst */}
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-gray-700">
             {sortedOpties.map((optie, index) => (
               <div
                 key={optie.id}
                 className={`flex items-center gap-3 px-4 py-3 ${
-                  !optie.actief ? 'bg-gray-50 opacity-60' : ''
+                  !optie.actief ? 'bg-gray-800/50 opacity-60' : ''
                 }`}
               >
                 {/* Drag handle placeholder */}
-                <GripVertical size={16} className="text-gray-300" />
+                <GripVertical size={16} className="text-gray-600" />
 
                 {/* Kleur indicator */}
                 {optie.kleur && (
                   <div
-                    className="w-6 h-6 rounded border border-gray-200 flex-shrink-0"
+                    className="w-6 h-6 rounded border border-gray-600 flex-shrink-0"
                     style={{ backgroundColor: optie.kleur }}
                   />
                 )}
@@ -131,16 +131,16 @@ export default function FilterCategorieEditor({
                 {/* Label en info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-gray-900">{optie.label}</span>
+                    <span className="font-medium text-gray-200">{optie.label}</span>
                     {!optie.actief && (
-                      <span className="text-xs bg-gray-200 text-gray-600 px-1.5 py-0.5 rounded">
+                      <span className="text-xs bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded">
                         inactief
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-gray-400">ID: {optie.id}</div>
+                  <div className="text-xs text-gray-500">ID: {optie.id}</div>
                   {optie.beschrijving && (
-                    <div className="text-sm text-gray-500">{optie.beschrijving}</div>
+                    <div className="text-sm text-gray-400">{optie.beschrijving}</div>
                   )}
                 </div>
 
@@ -149,18 +149,18 @@ export default function FilterCategorieEditor({
                   <button
                     onClick={() => moveOptie(index, 'up')}
                     disabled={index === 0}
-                    className="p-1 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="p-1 hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                     title="Omhoog"
                   >
-                    <ChevronUp size={14} className="text-gray-500" />
+                    <ChevronUp size={14} className="text-gray-400" />
                   </button>
                   <button
                     onClick={() => moveOptie(index, 'down')}
                     disabled={index === sortedOpties.length - 1}
-                    className="p-1 hover:bg-gray-100 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="p-1 hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
                     title="Omlaag"
                   >
-                    <ChevronDown size={14} className="text-gray-500" />
+                    <ChevronDown size={14} className="text-gray-400" />
                   </button>
                 </div>
 
@@ -168,14 +168,14 @@ export default function FilterCategorieEditor({
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleEditOptie(optie)}
-                    className="p-2 hover:bg-blue-50 rounded text-blue-600 transition-colors"
+                    className="p-2 hover:bg-blue-900/30 rounded text-blue-400 transition-colors"
                     title="Bewerken"
                   >
                     <Edit2 size={16} />
                   </button>
                   <button
                     onClick={() => handleDeleteOptie(optie)}
-                    className="p-2 hover:bg-red-50 rounded text-red-600 transition-colors"
+                    className="p-2 hover:bg-red-900/30 rounded text-red-400 transition-colors"
                     title="Verwijderen"
                   >
                     <Trash2 size={16} />
@@ -186,10 +186,10 @@ export default function FilterCategorieEditor({
           </div>
 
           {/* Toevoegen knop */}
-          <div className="p-3 border-t border-gray-200 bg-gray-50">
+          <div className="p-3 border-t border-gray-700 bg-gray-800">
             <button
               onClick={handleAddOptie}
-              className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 font-medium"
             >
               <Plus size={16} />
               Nieuwe optie toevoegen

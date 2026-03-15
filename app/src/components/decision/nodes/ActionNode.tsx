@@ -37,22 +37,22 @@ function ActionNode({ data, selected }: ActionNodeProps) {
       />
 
       <div
-        className={`px-4 py-3 rounded-lg shadow-md border-2 border-blue-400 min-w-[160px] max-w-[200px] transition-all ${
-          selected ? 'ring-2 ring-blue-300 ring-offset-2' : ''
+        className={`px-4 py-3 rounded-lg shadow-md border-2 border-blue-500 min-w-[160px] max-w-[200px] transition-all ${
+          selected ? 'ring-2 ring-blue-400 ring-offset-2 ring-offset-gray-900' : ''
         }`}
         style={{ backgroundColor: bgColor }}
       >
         <div className="flex items-center gap-2 mb-1">
-          <Zap size={14} className="text-blue-600" />
-          <span className="text-xs text-blue-600 font-medium">Actie</span>
+          <Zap size={14} className="text-blue-700" />
+          <span className="text-xs text-blue-700 font-medium">Actie</span>
         </div>
 
-        <h3 className="font-semibold text-sm text-slate-800 leading-tight mb-1">
+        <h3 className="font-semibold text-sm text-gray-900 leading-tight mb-1">
           {node.titel || 'Actie'}
         </h3>
 
         {node.beschrijving && (
-          <p className="text-xs text-slate-600 line-clamp-2 mb-1">
+          <p className="text-xs text-gray-700 line-clamp-2 mb-1">
             {node.beschrijving}
           </p>
         )}
@@ -63,7 +63,7 @@ function ActionNode({ data, selected }: ActionNodeProps) {
             e.stopPropagation();
             data.onShowConnectionMenu?.(node.id, 'source');
           }}
-          className="flex items-center gap-1 mt-2 px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs rounded border border-blue-200 transition-colors"
+          className="flex items-center gap-1 mt-2 px-2 py-1 bg-blue-900/60 hover:bg-blue-800/60 text-blue-200 text-xs rounded border border-blue-600 transition-colors"
           title="Verbinden met andere stap"
         >
           <Link size={10} />
@@ -71,7 +71,7 @@ function ActionNode({ data, selected }: ActionNodeProps) {
         </button>
 
         {afdelingLabel && (
-          <div className="text-[10px] text-slate-500 mt-1 pt-1 border-t border-slate-200">
+          <div className="text-[10px] text-gray-600 mt-1 pt-1 border-t border-gray-400/30">
             {afdelingLabel}
           </div>
         )}

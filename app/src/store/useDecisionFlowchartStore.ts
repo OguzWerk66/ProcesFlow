@@ -5,6 +5,7 @@ import type {
   DecisionFlowchartMetadata,
 } from '../types/decisionFlowchart';
 import * as storage from '../lib/decisionFlowchartStorage';
+import { saveLastSession } from './useStore';
 
 interface DecisionFlowchartState {
   // Data
@@ -38,14 +39,14 @@ interface DecisionFlowchartState {
   setSelectedNode: (node: DecisionNode | null) => void;
   setSelectedEdge: (edgeId: string | null) => void;
 
-  // Actions - Flowchart management
-  loadFlowchartList: () => void;
+  // Actions - Flowchart management (async)
+  loadFlowchartList: () => Promise<void>;
   createNewFlowchart: () => void;
-  saveFlowchart: (naam: string, beschrijving?: string) => void;
-  saveFlowchartAs: (naam: string, beschrijving?: string) => void;
-  loadFlowchart: (id: string) => void;
-  deleteFlowchart: (id: string) => void;
-  autoSave: () => void;
+  saveFlowchart: (naam: string, beschrijving?: string) => Promise<void>;
+  saveFlowchartAs: (naam: string, beschrijving?: string) => Promise<void>;
+  loadFlowchart: (id: string) => Promise<void>;
+  deleteFlowchart: (id: string) => Promise<void>;
+  autoSave: () => Promise<void>;
 
   // Actions - Undo system
   undo: () => void;
@@ -65,27 +66,15 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
   activeFlowchartId: null,
   activeFlowchartName: null,
 
-  // Helper function to save state to history
   _saveToHistory: () => {
     const state = get();
     const currentSnapshot = { nodes: [...state.nodes], edges: [...state.edges] };
 
     set((state) => {
-      // Remove any history after current index (for when undoing and then making new changes)
       const newHistory = state.history.slice(0, state.historyIndex + 1);
-
-      // Add current state to history
       newHistory.push(currentSnapshot);
-
-      // Keep only last 3 states
-      if (newHistory.length > 3) {
-        newHistory.shift();
-      }
-
-      return {
-        history: newHistory,
-        historyIndex: newHistory.length - 1,
-      };
+      if (newHistory.length > 3) newHistory.shift();
+      return { history: newHistory, historyIndex: newHistory.length - 1 };
     });
   },
 
@@ -95,24 +84,17 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
 
   addNode: (node) => {
     get()._saveToHistory();
-    set((state) => ({
-      nodes: [...state.nodes, node],
-    }));
-    // Automatisch opslaan na toevoegen
+    set((state) => ({ nodes: [...state.nodes, node] }));
     setTimeout(() => get().autoSave(), 100);
   },
 
   updateNode: (id, updates) => {
     set((state) => ({
-      nodes: state.nodes.map((node) =>
-        node.id === id ? { ...node, ...updates } : node
-      ),
-      selectedNode:
-        state.selectedNode?.id === id
-          ? { ...state.selectedNode, ...updates }
-          : state.selectedNode,
+      nodes: state.nodes.map((node) => node.id === id ? { ...node, ...updates } : node),
+      selectedNode: state.selectedNode?.id === id
+        ? { ...state.selectedNode, ...updates }
+        : state.selectedNode,
     }));
-    // Automatisch opslaan na bijwerken (met debounce)
     setTimeout(() => get().autoSave(), 500);
   },
 
@@ -123,24 +105,18 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
       edges: state.edges.filter((edge) => edge.van !== id && edge.naar !== id),
       selectedNode: state.selectedNode?.id === id ? null : state.selectedNode,
     }));
-    // Automatisch opslaan na verwijderen
     setTimeout(() => get().autoSave(), 100);
   },
 
   addEdge: (edge) => {
     get()._saveToHistory();
-    set((state) => ({
-      edges: [...state.edges, edge],
-    }));
-    // Automatisch opslaan na toevoegen
+    set((state) => ({ edges: [...state.edges, edge] }));
     setTimeout(() => get().autoSave(), 100);
   },
 
   updateEdge: (id, updates) =>
     set((state) => ({
-      edges: state.edges.map((edge) =>
-        edge.id === id ? { ...edge, ...updates } : edge
-      ),
+      edges: state.edges.map((edge) => edge.id === id ? { ...edge, ...updates } : edge),
     })),
 
   deleteEdge: (id) => {
@@ -149,26 +125,16 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
       edges: state.edges.filter((edge) => edge.id !== id),
       selectedEdgeId: state.selectedEdgeId === id ? null : state.selectedEdgeId,
     }));
-    // Automatisch opslaan na verwijderen
     setTimeout(() => get().autoSave(), 100);
   },
 
   // UI actions
-  setSelectedNode: (node) =>
-    set({
-      selectedNode: node,
-      selectedEdgeId: null,
-    }),
+  setSelectedNode: (node) => set({ selectedNode: node, selectedEdgeId: null }),
+  setSelectedEdge: (edgeId) => set({ selectedEdgeId: edgeId, selectedNode: null }),
 
-  setSelectedEdge: (edgeId) =>
-    set({
-      selectedEdgeId: edgeId,
-      selectedNode: null,
-    }),
-
-  // Flowchart management
-  loadFlowchartList: () => {
-    const list = storage.getFlowchartMetadataList();
+  // Flowchart management (async)
+  loadFlowchartList: async () => {
+    const list = await storage.getFlowchartMetadataList();
     set({ flowchartList: list });
   },
 
@@ -182,54 +148,30 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
       activeFlowchartName: null,
     }),
 
-  saveFlowchart: (naam, beschrijving) => {
+  saveFlowchart: async (naam, beschrijving) => {
     const state = get();
     if (state.activeFlowchartId) {
-      // Update bestaand
-      storage.updateFlowchart(
-        state.activeFlowchartId,
-        state.nodes,
-        state.edges,
-        naam,
-        beschrijving
-      );
-      set({
-        activeFlowchartName: naam,
-        flowchartList: storage.getFlowchartMetadataList(),
-      });
+      await storage.updateFlowchart(state.activeFlowchartId, state.nodes, state.edges, naam, beschrijving);
+      saveLastSession({ view: 'decision', id: state.activeFlowchartId });
     } else {
-      // Nieuw opslaan
-      const newFlowchart = storage.saveNewFlowchart(
-        naam,
-        state.nodes,
-        state.edges,
-        beschrijving
-      );
-      set({
-        activeFlowchartId: newFlowchart.id,
-        activeFlowchartName: newFlowchart.naam,
-        flowchartList: storage.getFlowchartMetadataList(),
-      });
+      const newFlowchart = await storage.saveNewFlowchart(naam, state.nodes, state.edges, beschrijving);
+      set({ activeFlowchartId: newFlowchart.id });
+      saveLastSession({ view: 'decision', id: newFlowchart.id });
     }
+    const list = await storage.getFlowchartMetadataList();
+    set({ activeFlowchartName: naam, flowchartList: list });
   },
 
-  saveFlowchartAs: (naam, beschrijving) => {
+  saveFlowchartAs: async (naam, beschrijving) => {
     const state = get();
-    const newFlowchart = storage.saveNewFlowchart(
-      naam,
-      state.nodes,
-      state.edges,
-      beschrijving
-    );
-    set({
-      activeFlowchartId: newFlowchart.id,
-      activeFlowchartName: newFlowchart.naam,
-      flowchartList: storage.getFlowchartMetadataList(),
-    });
+    const newFlowchart = await storage.saveNewFlowchart(naam, state.nodes, state.edges, beschrijving);
+    const list = await storage.getFlowchartMetadataList();
+    set({ activeFlowchartId: newFlowchart.id, activeFlowchartName: newFlowchart.naam, flowchartList: list });
+    saveLastSession({ view: 'decision', id: newFlowchart.id });
   },
 
-  loadFlowchart: (id) => {
-    const flowchart = storage.getFlowchart(id);
+  loadFlowchart: async (id) => {
+    const flowchart = await storage.getFlowchart(id);
     if (flowchart) {
       set({
         nodes: flowchart.nodes,
@@ -239,17 +181,17 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
         selectedNode: null,
         selectedEdgeId: null,
       });
+      saveLastSession({ view: 'decision', id: flowchart.id });
     }
   },
 
-  deleteFlowchart: (id) => {
-    storage.deleteFlowchart(id);
+  deleteFlowchart: async (id) => {
+    await storage.deleteFlowchart(id);
+    const list = await storage.getFlowchartMetadataList();
     const state = get();
-    const newList = storage.getFlowchartMetadataList();
-
     if (state.activeFlowchartId === id) {
       set({
-        flowchartList: newList,
+        flowchartList: list,
         nodes: [],
         edges: [],
         activeFlowchartId: null,
@@ -258,15 +200,14 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
         selectedEdgeId: null,
       });
     } else {
-      set({ flowchartList: newList });
+      set({ flowchartList: list });
     }
   },
 
-  autoSave: () => {
+  autoSave: async () => {
     const state = get();
     if (state.activeFlowchartId && state.activeFlowchartName) {
-      // Automatisch opslaan als er een actief flowchart is
-      storage.updateFlowchart(
+      await storage.updateFlowchart(
         state.activeFlowchartId,
         state.nodes,
         state.edges,
@@ -290,16 +231,10 @@ export const useDecisionFlowchartStore = create<DecisionFlowchartState>((set, ge
     }
   },
 
-  canUndo: () => {
-    const state = get();
-    return state.historyIndex > 0;
-  },
+  canUndo: () => get().historyIndex > 0,
 }));
 
 // Selector hooks
-export const useDecisionNodes = () =>
-  useDecisionFlowchartStore((state) => state.nodes);
-export const useDecisionEdges = () =>
-  useDecisionFlowchartStore((state) => state.edges);
-export const useSelectedDecisionNode = () =>
-  useDecisionFlowchartStore((state) => state.selectedNode);
+export const useDecisionNodes = () => useDecisionFlowchartStore((state) => state.nodes);
+export const useDecisionEdges = () => useDecisionFlowchartStore((state) => state.edges);
+export const useSelectedDecisionNode = () => useDecisionFlowchartStore((state) => state.selectedNode);

@@ -1,7 +1,9 @@
 import { useEffect, useState, Component, type ReactNode } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useStore } from './store/useStore';
+import { readLastSession } from './store/useStore';
 import { useDecisionFlowchartStore } from './store/useDecisionFlowchartStore';
+import { useFilterConfigStore } from './store/useFilterConfigStore';
 import { loadAllData } from './lib/dataLoader';
 import Header from './components/layout/Header';
 import Sidebar from './components/layout/Sidebar';
@@ -12,7 +14,9 @@ import { DecisionFlowCanvas } from './components/decision';
 import { NodeDialog, EdgeDialog, EdgeEditDialog, DecisionNodeDialog, DecisionEdgeDialog, SaveDecisionFlowchartDialog, DecisionFlowchartArchiveDialog } from './components/dialogs';
 import { SaveCanvasDialog } from './components/dialogs/SaveCanvasDialog';
 import { CanvasArchiveDialog } from './components/dialogs/CanvasArchiveDialog';
+import { ImportDocumentDialog } from './components/dialogs/ImportDocumentDialog';
 import { AdminDashboard } from './components/admin';
+import type { ParseResult } from './lib/documentParser';
 import type { DecisionNodeType } from './types/decisionFlowchart';
 
 type ActiveView = 'procesflow' | 'decision';
@@ -40,10 +44,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="h-screen flex items-center justify-center bg-red-50">
+        <div className="h-screen flex items-center justify-center bg-gray-950">
           <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-red-600 mb-4">Er is iets misgegaan</h1>
-            <pre className="text-sm text-red-800 bg-red-100 p-4 rounded max-w-xl overflow-auto">
+            <h1 className="text-2xl font-bold text-red-400 mb-4">Er is iets misgegaan</h1>
+            <pre className="text-sm text-red-300 bg-red-950/50 border border-red-800 p-4 rounded max-w-xl overflow-auto">
               {this.state.error?.message}
             </pre>
             <button
@@ -64,7 +68,19 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [activeView, setActiveView] = useState<ActiveView>('procesflow');
+  const [activeView, setActiveView] = useState<ActiveView>(() => {
+    const last = readLastSession();
+    return last?.view ?? 'procesflow';
+  });
+
+  const handleViewChange = (view: ActiveView) => {
+    setActiveView(view);
+    // Bewaar view-keuze in de bestaande sessie
+    const last = readLastSession();
+    if (last) {
+      try { localStorage.setItem('procesflow_last_session', JSON.stringify({ ...last, view })); } catch { /* ignore */ }
+    }
+  };
 
   // ProcesFlow state
   const [isNodeDialogOpen, setIsNodeDialogOpen] = useState(false);
@@ -74,6 +90,7 @@ function App() {
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false);
   const [isNewCanvasConfirmOpen, setIsNewCanvasConfirmOpen] = useState(false);
   const [isAdminDashboardOpen, setIsAdminDashboardOpen] = useState(false);
+  const [isImportDocumentOpen, setIsImportDocumentOpen] = useState(false);
 
   // Decision Flowchart state
   const [isDecisionNodeDialogOpen, setIsDecisionNodeDialogOpen] = useState(false);
@@ -88,14 +105,22 @@ function App() {
   const setEdges = useStore((state) => state.setEdges);
   const setModules = useStore((state) => state.setModules);
   const setUser = useStore((state) => state.setUser);
+  const setBronTekst = useStore((state) => state.setBronTekst);
   const nodes = useStore((state) => state.nodes);
   const loadCanvasList = useStore((state) => state.loadCanvasList);
+  const loadCanvas = useStore((state) => state.loadCanvas);
   const createNewCanvas = useStore((state) => state.createNewCanvas);
+  const undo = useStore((state) => state.undo);
+  const canUndo = useStore((state) => state.canUndo);
 
   // Decision Flowchart store
   const decisionNodes = useDecisionFlowchartStore((state) => state.nodes);
   const loadDecisionFlowchartList = useDecisionFlowchartStore((state) => state.loadFlowchartList);
+  const loadFlowchart = useDecisionFlowchartStore((state) => state.loadFlowchart);
   const createNewDecisionFlowchart = useDecisionFlowchartStore((state) => state.createNewFlowchart);
+
+  // Filter Config store
+  const loadFilterConfig = useFilterConfigStore((state) => state.loadConfig);
 
   const handleAddNode = () => {
     setIsNodeDialogOpen(true);
@@ -104,6 +129,12 @@ function App() {
   const handleAddEdge = (sourceNodeId?: string) => {
     setEdgeSourceNodeId(sourceNodeId || null);
     setIsEdgeDialogOpen(true);
+  };
+
+  const handleImportDocument = (result: ParseResult, documentText: string) => {
+    setNodes(result.nodes);
+    setEdges(result.edges);
+    setBronTekst(documentText);
   };
 
   const handleNewCanvas = () => {
@@ -144,47 +175,74 @@ function App() {
   };
 
   useEffect(() => {
-    try {
-      // Laad de data bij startup
-      const data = loadAllData();
-      console.log('Data loaded:', {
-        nodes: data.nodes.length,
-        edges: data.edges.length,
-        modules: data.modules.length
-      });
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) return;
+        if (activeView === 'procesflow' && canUndo()) {
+          e.preventDefault();
+          undo();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeView, undo, canUndo]);
 
-      setNodes(data.nodes);
-      setEdges(data.edges);
-      setModules(data.modules);
+  useEffect(() => {
+    const init = async () => {
+      try {
+        setModules(loadAllData().modules);
 
-      // Set een demo user (later vervangen door echte auth)
-      setUser({
-        id: 'demo-user',
-        email: 'demo@vastgoednederland.nl',
-        naam: 'Demo Gebruiker',
-        rol: 'admin',
-      });
+        setUser({
+          id: 'demo-user',
+          email: 'demo@vastgoednederland.nl',
+          naam: 'Demo Gebruiker',
+          rol: 'admin',
+        });
 
-      // Laad canvas lijst
-      loadCanvasList();
+        // Laad lijsten parallel
+        await Promise.all([
+          loadCanvasList(),
+          loadDecisionFlowchartList(),
+          loadFilterConfig(),
+        ]);
 
-      // Laad decision flowchart lijst
-      loadDecisionFlowchartList();
+        // Herstel laatste sessie
+        const lastSession = readLastSession();
+        if (lastSession?.id) {
+          if (lastSession.view === 'procesflow') {
+            await loadCanvas(lastSession.id);
+          } else if (lastSession.view === 'decision') {
+            await loadFlowchart(lastSession.id);
+          }
+        } else {
+          // Geen opgeslagen sessie: laad standaard JSON data
+          const data = loadAllData();
+          setNodes(data.nodes);
+          setEdges(data.edges);
+        }
 
-      setIsLoading(false);
-    } catch (err) {
-      console.error('Failed to load data:', err);
-      setLoadError(err instanceof Error ? err.message : 'Unknown error');
-      setIsLoading(false);
-    }
-  }, [setNodes, setEdges, setModules, setUser, loadCanvasList, loadDecisionFlowchartList]);
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Failed to load data:', err);
+        // Fallback: laad standaard data
+        const data = loadAllData();
+        setNodes(data.nodes);
+        setEdges(data.edges);
+        setIsLoading(false);
+      }
+    };
+
+    init();
+  }, [setNodes, setEdges, setModules, setUser, loadCanvasList, loadDecisionFlowchartList, loadFilterConfig, loadCanvas, loadFlowchart]);
 
   if (loadError) {
     return (
-      <div className="h-screen flex items-center justify-center bg-red-50">
+      <div className="h-screen flex items-center justify-center bg-gray-950">
         <div className="text-center p-8">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Fout bij laden data</h1>
-          <pre className="text-sm text-red-800 bg-red-100 p-4 rounded">{loadError}</pre>
+          <h1 className="text-2xl font-bold text-red-400 mb-4">Fout bij laden data</h1>
+          <pre className="text-sm text-red-300 bg-red-950/50 border border-red-800 p-4 rounded">{loadError}</pre>
         </div>
       </div>
     );
@@ -192,10 +250,10 @@ function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-50">
+      <div className="h-screen flex items-center justify-center bg-gray-950">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600">Procesmodel laden...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Procesmodel laden...</p>
         </div>
       </div>
     );
@@ -203,16 +261,17 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="h-screen flex flex-col overflow-hidden">
+      <div className="h-screen flex flex-col overflow-hidden bg-gray-950">
         <Header
           activeView={activeView}
-          onViewChange={setActiveView}
+          onViewChange={handleViewChange}
           // ProcesFlow handlers
           onAddNode={handleAddNode}
           onAddEdge={() => handleAddEdge()}
           onSaveCanvas={() => setIsSaveDialogOpen(true)}
           onOpenArchive={() => setIsArchiveDialogOpen(true)}
           onNewCanvas={handleNewCanvas}
+          onImportDocument={() => setIsImportDocumentOpen(true)}
           onOpenAdmin={() => setIsAdminDashboardOpen(true)}
           // Decision Flowchart handlers
           onAddDecisionNode={handleAddDecisionNode}
@@ -290,6 +349,13 @@ function App() {
         onClose={() => setIsDecisionArchiveDialogOpen(false)}
       />
 
+      {/* Import Document Dialog */}
+      <ImportDocumentDialog
+        isOpen={isImportDocumentOpen}
+        onClose={() => setIsImportDocumentOpen(false)}
+        onImport={handleImportDocument}
+      />
+
       {/* Admin Dashboard */}
       <AdminDashboard
         isOpen={isAdminDashboardOpen}
@@ -299,17 +365,17 @@ function App() {
       {/* Confirm dialogs */}
       {isNewCanvasConfirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setIsNewCanvasConfirmOpen(false)} />
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Nieuw canvas aanmaken?</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setIsNewCanvasConfirmOpen(false)} />
+          <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+            <h3 className="text-lg font-semibold text-gray-100 mb-2">Nieuw canvas aanmaken?</h3>
+            <p className="text-gray-400 mb-4">
               Je hebt niet-opgeslagen wijzigingen. Wil je een nieuw leeg canvas starten?
               Zorg dat je eerst opslaat als je de huidige data wilt behouden.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsNewCanvasConfirmOpen(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
               >
                 Annuleren
               </button>
@@ -325,17 +391,17 @@ function App() {
       )}
       {isNewDecisionFlowchartConfirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setIsNewDecisionFlowchartConfirmOpen(false)} />
-          <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Nieuw flowchart aanmaken?</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setIsNewDecisionFlowchartConfirmOpen(false)} />
+          <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-md mx-4 p-6">
+            <h3 className="text-lg font-semibold text-gray-100 mb-2">Nieuw flowchart aanmaken?</h3>
+            <p className="text-gray-400 mb-4">
               Je hebt niet-opgeslagen wijzigingen. Wil je een nieuw leeg flowchart starten?
               Zorg dat je eerst opslaat als je de huidige data wilt behouden.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsNewDecisionFlowchartConfirmOpen(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
               >
                 Annuleren
               </button>

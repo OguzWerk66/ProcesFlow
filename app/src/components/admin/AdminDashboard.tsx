@@ -22,18 +22,18 @@ export default function AdminDashboard({ isOpen, onClose }: AdminDashboardProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-gray-100 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col">
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+      <div className="relative bg-gray-950 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 bg-white rounded-t-lg border-b">
+        <div className="flex items-center justify-between p-4 bg-gray-900 rounded-t-lg border-b border-gray-700">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Beheerdersdashboard</h2>
+            <h2 className="text-xl font-semibold text-gray-100">Beheerdersdashboard</h2>
             <p className="text-sm text-gray-500">Beheer de filteropties voor het procesmodel</p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setResetConfirm(true)}
-              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-sm text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
               title="Reset naar standaard"
             >
               <RotateCcw size={16} />
@@ -41,9 +41,9 @@ export default function AdminDashboard({ isOpen, onClose }: AdminDashboardProps)
             </button>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-200"
             >
-              <X size={20} className="text-gray-500" />
+              <X size={20} />
             </button>
           </div>
         </div>
@@ -76,7 +76,7 @@ export default function AdminDashboard({ isOpen, onClose }: AdminDashboardProps)
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-4 bg-white rounded-b-lg border-t">
+        <div className="flex items-center justify-end gap-3 p-4 bg-gray-900 rounded-b-lg border-t border-gray-700">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

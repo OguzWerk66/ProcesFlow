@@ -97,25 +97,25 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Link2 size={20} className="text-purple-600" />
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+      <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
+            <Link2 size={20} className="text-purple-500" />
             Nieuwe verbinding
           </h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1 hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-200"
           >
-            <X size={20} className="text-gray-500" />
+            <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {/* Van node */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-1">
               Van *
             </label>
             <select
@@ -124,7 +124,7 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
                 setVan(e.target.value);
                 setError('');
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             >
               <option value="">-- Selecteer bron --</option>
               {sourceNodes.map(node => (
@@ -137,12 +137,12 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
 
           {/* Visuele pijl */}
           <div className="flex justify-center">
-            <ArrowRight className="w-6 h-6 text-gray-400" />
+            <ArrowRight className="w-6 h-6 text-gray-500" />
           </div>
 
           {/* Naar node */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-1">
               Naar *
             </label>
             <select
@@ -151,7 +151,7 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
                 setNaar(e.target.value);
                 setError('');
               }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             >
               <option value="">-- Selecteer doel --</option>
               {targetNodes.map(node => (
@@ -164,7 +164,7 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
 
           {/* Type verbinding */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Type verbinding
             </label>
             <div className="flex gap-3">
@@ -175,11 +175,11 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
                     flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg border-2 cursor-pointer transition-all
                     ${type === edgeType
                       ? edgeType === 'ja'
-                        ? 'border-green-500 bg-green-50'
+                        ? 'border-green-500 bg-green-950/40'
                         : edgeType === 'nee'
-                          ? 'border-red-500 bg-red-50'
-                          : 'border-gray-500 bg-gray-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-red-500 bg-red-950/40'
+                          : 'border-gray-500 bg-gray-700'
+                      : 'border-gray-700 bg-gray-800 hover:border-gray-600'
                     }
                   `}
                 >
@@ -194,10 +194,10 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
                   <span
                     className={`
                       w-3 h-3 rounded-full
-                      ${edgeType === 'ja' ? 'bg-green-500' : edgeType === 'nee' ? 'bg-red-500' : 'bg-gray-500'}
+                      ${edgeType === 'ja' ? 'bg-green-500' : edgeType === 'nee' ? 'bg-red-500' : 'bg-gray-400'}
                     `}
                   />
-                  <span className="text-sm font-medium">
+                  <span className="text-sm font-medium text-gray-300">
                     {DECISION_EDGE_LABELS[edgeType] || 'Standaard'}
                   </span>
                 </label>
@@ -207,7 +207,7 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
 
           {/* Custom label */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-400 mb-1">
               Label
             </label>
             <input
@@ -215,19 +215,19 @@ export function DecisionEdgeDialog({ isOpen, onClose }: DecisionEdgeDialogProps)
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="Optioneel label voor de verbinding"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-600">{error}</p>
+            <p className="text-sm text-red-400">{error}</p>
           )}
 
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
             >
               Annuleren
             </button>

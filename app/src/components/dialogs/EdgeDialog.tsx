@@ -10,10 +10,10 @@ interface EdgeDialogProps {
 }
 
 const EDGE_TYPE_OPTIONS: { value: EdgeType; label: string; color: string }[] = [
-  { value: 'standaard', label: 'Standaard', color: 'bg-slate-100 text-slate-700' },
-  { value: 'uitzondering', label: 'Uitzondering', color: 'bg-amber-100 text-amber-700' },
-  { value: 'escalatie', label: 'Escalatie', color: 'bg-red-100 text-red-700' },
-  { value: 'terugkoppeling', label: 'Terugkoppeling', color: 'bg-purple-100 text-purple-700' },
+  { value: 'standaard', label: 'Standaard', color: 'bg-gray-700 text-gray-300' },
+  { value: 'uitzondering', label: 'Uitzondering', color: 'bg-amber-900/60 text-amber-300' },
+  { value: 'escalatie', label: 'Escalatie', color: 'bg-red-900/60 text-red-300' },
+  { value: 'terugkoppeling', label: 'Terugkoppeling', color: 'bg-purple-900/60 text-purple-300' },
 ];
 
 function generateEdgeId(edges: ProcesEdge[]): string {
@@ -101,34 +101,34 @@ export default function EdgeDialog({ isOpen, onClose, sourceNodeId }: EdgeDialog
   const targetNode = nodes.find(n => n.id === formData.naar);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-lg">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-100">
             Nieuwe link aanmaken
           </h2>
-          <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded">
-            <X className="w-5 h-5 text-slate-500" />
+          <button onClick={onClose} className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-gray-200">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="p-6 space-y-4">
             {error && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+              <div className="p-3 bg-red-950/50 border border-red-800 rounded-lg text-sm text-red-300">
                 {error}
               </div>
             )}
 
             {/* Visual preview */}
             {formData.van && formData.naar && (
-              <div className="p-4 bg-slate-50 rounded-lg border border-slate-200">
+              <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
                 <div className="flex items-center justify-center gap-3 text-sm">
-                  <div className="px-3 py-2 bg-white rounded border border-slate-300 max-w-[180px] truncate">
+                  <div className="px-3 py-2 bg-gray-700 border border-gray-600 text-gray-200 rounded max-w-[180px] truncate">
                     {sourceNode?.titel || formData.van}
                   </div>
-                  <ArrowRight className="w-5 h-5 text-slate-400 flex-shrink-0" />
-                  <div className="px-3 py-2 bg-white rounded border border-slate-300 max-w-[180px] truncate">
+                  <ArrowRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  <div className="px-3 py-2 bg-gray-700 border border-gray-600 text-gray-200 rounded max-w-[180px] truncate">
                     {targetNode?.titel || formData.naar}
                   </div>
                 </div>
@@ -137,13 +137,13 @@ export default function EdgeDialog({ isOpen, onClose, sourceNodeId }: EdgeDialog
 
             {/* Source node */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Van processtap *
               </label>
               <select
                 value={formData.van}
                 onChange={(e) => setFormData(prev => ({ ...prev, van: e.target.value }))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Selecteer een processtap...</option>
@@ -157,13 +157,13 @@ export default function EdgeDialog({ isOpen, onClose, sourceNodeId }: EdgeDialog
 
             {/* Target node */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Naar processtap *
               </label>
               <select
                 value={formData.naar}
                 onChange={(e) => setFormData(prev => ({ ...prev, naar: e.target.value }))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Selecteer een processtap...</option>
@@ -179,7 +179,7 @@ export default function EdgeDialog({ isOpen, onClose, sourceNodeId }: EdgeDialog
 
             {/* Edge type */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Type verbinding
               </label>
               <div className="flex flex-wrap gap-2">
@@ -190,8 +190,8 @@ export default function EdgeDialog({ isOpen, onClose, sourceNodeId }: EdgeDialog
                     onClick={() => setFormData(prev => ({ ...prev, type: option.value }))}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       formData.type === option.value
-                        ? `${option.color} ring-2 ring-offset-1 ring-blue-500`
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                        ? `${option.color} ring-2 ring-offset-1 ring-offset-gray-900 ring-blue-500`
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                     }`}
                   >
                     {option.label}
@@ -202,39 +202,39 @@ export default function EdgeDialog({ isOpen, onClose, sourceNodeId }: EdgeDialog
 
             {/* Label */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Label
               </label>
               <input
                 type="text"
                 value={formData.label}
                 onChange={(e) => setFormData(prev => ({ ...prev, label: e.target.value }))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Korte beschrijving van de overgang"
               />
             </div>
 
             {/* Conditie */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Conditie
               </label>
               <input
                 type="text"
                 value={formData.conditie}
                 onChange={(e) => setFormData(prev => ({ ...prev, conditie: e.target.value }))}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Voorwaarde voor deze overgang (optioneel)"
               />
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-700 bg-gray-900">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
             >
               Annuleren
             </button>

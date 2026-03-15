@@ -4,134 +4,152 @@ import type {
   DecisionNode,
   DecisionEdge,
 } from '../types/decisionFlowchart';
+import { supabase } from './supabase';
 
-const STORAGE_KEY = 'procesflow-decision-flowcharts';
-
-// Genereer unieke ID
 function generateId(): string {
-  return `decision-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `decision-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
-// Haal alle flowcharts op uit localStorage
-export function getAllFlowcharts(): DecisionFlowchart[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored) as DecisionFlowchart[];
-    }
-  } catch (error) {
+export async function getAllFlowcharts(): Promise<DecisionFlowchart[]> {
+  const { data, error } = await supabase
+    .from('decision_flowcharts')
+    .select('*')
+    .order('aanmaak_datum', { ascending: true });
+
+  if (error) {
     console.error('Fout bij laden decision flowcharts:', error);
+    return [];
   }
-  return [];
-}
 
-// Haal metadata lijst op (voor archief weergave)
-export function getFlowchartMetadataList(): DecisionFlowchartMetadata[] {
-  const flowcharts = getAllFlowcharts();
-  return flowcharts.map((fc) => ({
-    id: fc.id,
-    naam: fc.naam,
-    beschrijving: fc.beschrijving,
-    aanmaakDatum: fc.aanmaakDatum,
-    laatstGewijzigd: fc.laatstGewijzigd,
-    nodeCount: fc.nodes.length,
-    edgeCount: fc.edges.length,
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    naam: row.naam,
+    beschrijving: row.beschrijving ?? undefined,
+    aanmaakDatum: row.aanmaak_datum,
+    laatstGewijzigd: row.laatst_gewijzigd,
+    nodes: row.nodes as DecisionNode[],
+    edges: row.edges as DecisionEdge[],
   }));
 }
 
-// Haal specifieke flowchart op
-export function getFlowchart(id: string): DecisionFlowchart | null {
-  const flowcharts = getAllFlowcharts();
-  return flowcharts.find((fc) => fc.id === id) || null;
-}
+export async function getFlowchartMetadataList(): Promise<DecisionFlowchartMetadata[]> {
+  const { data, error } = await supabase
+    .from('decision_flowcharts')
+    .select('id, naam, beschrijving, aanmaak_datum, laatst_gewijzigd, nodes, edges')
+    .order('aanmaak_datum', { ascending: true });
 
-// Sla alle flowcharts op
-function saveAllFlowcharts(flowcharts: DecisionFlowchart[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(flowcharts));
-  } catch (error) {
-    console.error('Fout bij opslaan decision flowcharts:', error);
+  if (error) {
+    console.error('Fout bij laden flowchart metadata:', error);
+    return [];
   }
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    naam: row.naam,
+    beschrijving: row.beschrijving ?? undefined,
+    aanmaakDatum: row.aanmaak_datum,
+    laatstGewijzigd: row.laatst_gewijzigd,
+    nodeCount: (row.nodes as unknown[]).length,
+    edgeCount: (row.edges as unknown[]).length,
+  }));
 }
 
-// Sla nieuwe flowchart op
-export function saveNewFlowchart(
+export async function getFlowchart(id: string): Promise<DecisionFlowchart | null> {
+  const { data, error } = await supabase
+    .from('decision_flowcharts')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) return null;
+
+  return {
+    id: data.id,
+    naam: data.naam,
+    beschrijving: data.beschrijving ?? undefined,
+    aanmaakDatum: data.aanmaak_datum,
+    laatstGewijzigd: data.laatst_gewijzigd,
+    nodes: data.nodes as DecisionNode[],
+    edges: data.edges as DecisionEdge[],
+  };
+}
+
+export async function saveNewFlowchart(
   naam: string,
   nodes: DecisionNode[],
   edges: DecisionEdge[],
   beschrijving?: string
-): DecisionFlowchart {
-  const flowcharts = getAllFlowcharts();
+): Promise<DecisionFlowchart> {
   const now = new Date().toISOString();
+  const id = generateId();
 
-  const newFlowchart: DecisionFlowchart = {
-    id: generateId(),
+  const { error } = await supabase.from('decision_flowcharts').insert({
+    id,
     naam,
-    beschrijving,
-    aanmaakDatum: now,
-    laatstGewijzigd: now,
+    beschrijving: beschrijving ?? null,
+    aanmaak_datum: now,
+    laatst_gewijzigd: now,
     nodes,
     edges,
-  };
+  });
 
-  flowcharts.push(newFlowchart);
-  saveAllFlowcharts(flowcharts);
+  if (error) throw new Error(`Fout bij opslaan flowchart: ${error.message}`);
 
-  return newFlowchart;
+  return { id, naam, beschrijving, aanmaakDatum: now, laatstGewijzigd: now, nodes, edges };
 }
 
-// Update bestaande flowchart
-export function updateFlowchart(
+export async function updateFlowchart(
   id: string,
   nodes: DecisionNode[],
   edges: DecisionEdge[],
   naam?: string,
   beschrijving?: string
-): DecisionFlowchart | null {
-  const flowcharts = getAllFlowcharts();
-  const index = flowcharts.findIndex((fc) => fc.id === id);
-
-  if (index === -1) {
-    return null;
-  }
-
-  const updated: DecisionFlowchart = {
-    ...flowcharts[index],
+): Promise<DecisionFlowchart | null> {
+  const updates: Record<string, unknown> = {
     nodes,
     edges,
-    laatstGewijzigd: new Date().toISOString(),
+    laatst_gewijzigd: new Date().toISOString(),
   };
+  if (naam !== undefined) updates.naam = naam;
+  if (beschrijving !== undefined) updates.beschrijving = beschrijving;
 
-  if (naam !== undefined) {
-    updated.naam = naam;
-  }
-  if (beschrijving !== undefined) {
-    updated.beschrijving = beschrijving;
-  }
+  const { data, error } = await supabase
+    .from('decision_flowcharts')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
 
-  flowcharts[index] = updated;
-  saveAllFlowcharts(flowcharts);
+  if (error || !data) return null;
 
-  return updated;
+  return {
+    id: data.id,
+    naam: data.naam,
+    beschrijving: data.beschrijving ?? undefined,
+    aanmaakDatum: data.aanmaak_datum,
+    laatstGewijzigd: data.laatst_gewijzigd,
+    nodes: data.nodes as DecisionNode[],
+    edges: data.edges as DecisionEdge[],
+  };
 }
 
-// Verwijder flowchart
-export function deleteFlowchart(id: string): boolean {
-  const flowcharts = getAllFlowcharts();
-  const filtered = flowcharts.filter((fc) => fc.id !== id);
-
-  if (filtered.length === flowcharts.length) {
+export async function deleteFlowchart(id: string): Promise<boolean> {
+  const { error } = await supabase.from('decision_flowcharts').delete().eq('id', id);
+  if (error) {
+    console.error('Fout bij verwijderen flowchart:', error);
     return false;
   }
-
-  saveAllFlowcharts(filtered);
   return true;
 }
 
-// Check of naam al bestaat
-export function flowchartNameExists(naam: string, excludeId?: string): boolean {
-  const flowcharts = getAllFlowcharts();
-  return flowcharts.some(
-    (fc) => fc.naam.toLowerCase() === naam.toLowerCase() && fc.id !== excludeId
-  );
+export async function flowchartNameExists(naam: string, excludeId?: string): Promise<boolean> {
+  let query = supabase
+    .from('decision_flowcharts')
+    .select('id')
+    .ilike('naam', naam);
+
+  if (excludeId) query = query.neq('id', excludeId);
+
+  const { data } = await query;
+  return (data?.length ?? 0) > 0;
 }

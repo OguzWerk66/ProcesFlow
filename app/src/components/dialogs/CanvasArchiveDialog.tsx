@@ -48,18 +48,18 @@ export function CanvasArchiveDialog({ isOpen, onClose }: CanvasArchiveDialogProp
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-        <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <FolderOpen size={20} className="text-blue-600" />
+        <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+        <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
+              <FolderOpen size={20} className="text-blue-500" />
               Canvas Archief
             </h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-1 hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-200"
             >
-              <X size={20} className="text-gray-500" />
+              <X size={20} />
             </button>
           </div>
 
@@ -78,23 +78,25 @@ export function CanvasArchiveDialog({ isOpen, onClose }: CanvasArchiveDialogProp
                     <div
                       key={canvas.id}
                       className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${
-                        canvas.id === activeCanvasId ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+                        canvas.id === activeCanvasId
+                          ? 'border-blue-600 bg-blue-950/30'
+                          : 'border-gray-700 bg-gray-800 hover:bg-gray-700'
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-gray-900 truncate">
+                            <h3 className="font-semibold text-gray-100 truncate">
                               {canvas.naam}
                             </h3>
                             {canvas.id === activeCanvasId && (
-                              <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full">
+                              <span className="px-2 py-0.5 text-xs bg-blue-900/60 text-blue-300 rounded-full">
                                 Actief
                               </span>
                             )}
                           </div>
                           {canvas.beschrijving && (
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                            <p className="text-sm text-gray-400 mt-1 line-clamp-2">
                               {canvas.beschrijving}
                             </p>
                           )}
@@ -115,7 +117,7 @@ export function CanvasArchiveDialog({ isOpen, onClose }: CanvasArchiveDialogProp
                             disabled={canvas.id === activeCanvasId}
                             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
                               canvas.id === activeCanvasId
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                                 : 'bg-blue-600 text-white hover:bg-blue-700'
                             }`}
                           >
@@ -123,7 +125,7 @@ export function CanvasArchiveDialog({ isOpen, onClose }: CanvasArchiveDialogProp
                           </button>
                           <button
                             onClick={() => setCanvasToDelete(canvas)}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-900/30 rounded-lg transition-colors"
                             title="Verwijderen"
                           >
                             <Trash2 size={18} />
@@ -136,10 +138,10 @@ export function CanvasArchiveDialog({ isOpen, onClose }: CanvasArchiveDialogProp
             )}
           </div>
 
-          <div className="border-t p-4 flex justify-end">
+          <div className="border-t border-gray-700 p-4 flex justify-end bg-gray-900">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
             >
               Sluiten
             </button>

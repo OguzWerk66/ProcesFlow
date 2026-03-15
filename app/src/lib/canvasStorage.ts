@@ -1,119 +1,156 @@
 import type { Canvas, CanvasMetadata, ProcesNode, ProcesEdge } from '../types';
+import { supabase } from './supabase';
 
-const STORAGE_KEY = 'procesflow-canvasses';
-
-// Genereer unieke ID
 function generateId(): string {
-  return `canvas-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  return `canvas-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }
 
-// Haal alle canvassen op uit localStorage
-export function getAllCanvasses(): Canvas[] {
-  try {
-    const data = localStorage.getItem(STORAGE_KEY);
-    if (!data) return [];
-    return JSON.parse(data) as Canvas[];
-  } catch (error) {
+export async function getAllCanvasses(): Promise<Canvas[]> {
+  const { data, error } = await supabase
+    .from('canvassen')
+    .select('*')
+    .order('aanmaak_datum', { ascending: true });
+
+  if (error) {
     console.error('Fout bij laden canvassen:', error);
     return [];
   }
-}
 
-// Haal alleen metadata op (voor archief lijst)
-export function getCanvasMetadataList(): CanvasMetadata[] {
-  const canvasses = getAllCanvasses();
-  return canvasses.map((canvas) => ({
-    id: canvas.id,
-    naam: canvas.naam,
-    beschrijving: canvas.beschrijving,
-    aanmaakDatum: canvas.aanmaakDatum,
-    laatstGewijzigd: canvas.laatstGewijzigd,
-    nodeCount: canvas.nodes.length,
-    edgeCount: canvas.edges.length,
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    naam: row.naam,
+    beschrijving: row.beschrijving ?? undefined,
+    aanmaakDatum: row.aanmaak_datum,
+    laatstGewijzigd: row.laatst_gewijzigd,
+    nodes: row.nodes as ProcesNode[],
+    edges: row.edges as ProcesEdge[],
   }));
 }
 
-// Haal een specifiek canvas op
-export function getCanvas(id: string): Canvas | null {
-  const canvasses = getAllCanvasses();
-  return canvasses.find((c) => c.id === id) || null;
+export async function getCanvasMetadataList(): Promise<CanvasMetadata[]> {
+  const { data, error } = await supabase
+    .from('canvassen')
+    .select('id, naam, beschrijving, aanmaak_datum, laatst_gewijzigd, nodes, edges')
+    .order('aanmaak_datum', { ascending: true });
+
+  if (error) {
+    console.error('Fout bij laden canvas metadata:', error);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    naam: row.naam,
+    beschrijving: row.beschrijving ?? undefined,
+    aanmaakDatum: row.aanmaak_datum,
+    laatstGewijzigd: row.laatst_gewijzigd,
+    nodeCount: (row.nodes as unknown[]).length,
+    edgeCount: (row.edges as unknown[]).length,
+  }));
 }
 
-// Sla een nieuw canvas op
-export function saveNewCanvas(
+export async function getCanvas(id: string): Promise<Canvas | null> {
+  const { data, error } = await supabase
+    .from('canvassen')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error || !data) return null;
+
+  return {
+    id: data.id,
+    naam: data.naam,
+    beschrijving: data.beschrijving ?? undefined,
+    aanmaakDatum: data.aanmaak_datum,
+    laatstGewijzigd: data.laatst_gewijzigd,
+    nodes: data.nodes as ProcesNode[],
+    edges: data.edges as ProcesEdge[],
+    bronTekst: data.bron_tekst ?? undefined,
+  };
+}
+
+export async function saveNewCanvas(
   naam: string,
   nodes: ProcesNode[],
   edges: ProcesEdge[],
-  beschrijving?: string
-): Canvas {
+  beschrijving?: string,
+  bronTekst?: string
+): Promise<Canvas> {
   const now = new Date().toISOString();
-  const newCanvas: Canvas = {
-    id: generateId(),
+  const id = generateId();
+
+  const { error } = await supabase.from('canvassen').insert({
+    id,
     naam,
-    beschrijving,
-    aanmaakDatum: now,
-    laatstGewijzigd: now,
+    beschrijving: beschrijving ?? null,
+    aanmaak_datum: now,
+    laatst_gewijzigd: now,
     nodes,
     edges,
-  };
+    bron_tekst: bronTekst ?? null,
+  });
 
-  const canvasses = getAllCanvasses();
-  canvasses.push(newCanvas);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(canvasses));
+  if (error) throw new Error(`Fout bij opslaan canvas: ${error.message}`);
 
-  return newCanvas;
+  return { id, naam, beschrijving, aanmaakDatum: now, laatstGewijzigd: now, nodes, edges, bronTekst };
 }
 
-// Update een bestaand canvas
-export function updateCanvas(
+export async function updateCanvas(
   id: string,
   nodes: ProcesNode[],
   edges: ProcesEdge[],
   naam?: string,
-  beschrijving?: string
-): Canvas | null {
-  const canvasses = getAllCanvasses();
-  const index = canvasses.findIndex((c) => c.id === id);
-
-  if (index === -1) return null;
-
-  const updatedCanvas: Canvas = {
-    ...canvasses[index],
+  beschrijving?: string,
+  bronTekst?: string
+): Promise<Canvas | null> {
+  const updates: Record<string, unknown> = {
     nodes,
     edges,
-    laatstGewijzigd: new Date().toISOString(),
+    laatst_gewijzigd: new Date().toISOString(),
   };
+  if (naam !== undefined) updates.naam = naam;
+  if (beschrijving !== undefined) updates.beschrijving = beschrijving;
+  if (bronTekst !== undefined) updates.bron_tekst = bronTekst;
 
-  if (naam !== undefined) {
-    updatedCanvas.naam = naam;
-  }
-  if (beschrijving !== undefined) {
-    updatedCanvas.beschrijving = beschrijving;
-  }
+  const { data, error } = await supabase
+    .from('canvassen')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
 
-  canvasses[index] = updatedCanvas;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(canvasses));
+  if (error || !data) return null;
 
-  return updatedCanvas;
+  return {
+    id: data.id,
+    naam: data.naam,
+    beschrijving: data.beschrijving ?? undefined,
+    aanmaakDatum: data.aanmaak_datum,
+    laatstGewijzigd: data.laatst_gewijzigd,
+    nodes: data.nodes as ProcesNode[],
+    edges: data.edges as ProcesEdge[],
+    bronTekst: data.bron_tekst ?? undefined,
+  };
 }
 
-// Verwijder een canvas
-export function deleteCanvas(id: string): boolean {
-  const canvasses = getAllCanvasses();
-  const filtered = canvasses.filter((c) => c.id !== id);
-
-  if (filtered.length === canvasses.length) {
-    return false; // Canvas niet gevonden
+export async function deleteCanvas(id: string): Promise<boolean> {
+  const { error } = await supabase.from('canvassen').delete().eq('id', id);
+  if (error) {
+    console.error('Fout bij verwijderen canvas:', error);
+    return false;
   }
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
   return true;
 }
 
-// Check of een canvas naam al bestaat
-export function canvasNameExists(naam: string, excludeId?: string): boolean {
-  const canvasses = getAllCanvasses();
-  return canvasses.some(
-    (c) => c.naam.toLowerCase() === naam.toLowerCase() && c.id !== excludeId
-  );
+export async function canvasNameExists(naam: string, excludeId?: string): Promise<boolean> {
+  let query = supabase
+    .from('canvassen')
+    .select('id')
+    .ilike('naam', naam);
+
+  if (excludeId) query = query.neq('id', excludeId);
+
+  const { data } = await query;
+  return (data?.length ?? 0) > 0;
 }

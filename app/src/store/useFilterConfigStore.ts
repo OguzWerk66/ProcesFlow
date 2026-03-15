@@ -2,20 +2,21 @@ import { create } from 'zustand';
 import { useMemo } from 'react';
 import type { FilterConfig, FilterCategorie, FilterOptie, FilterCategorieId } from '../types/filterConfig';
 import * as filterConfigStorage from '../lib/filterConfigStorage';
+import { defaultFilterConfig } from '../lib/defaultFilterConfig';
 
 interface FilterConfigState {
   // Data
   config: FilterConfig;
   isLoaded: boolean;
 
-  // Actions
-  loadConfig: () => void;
-  updateCategorie: (categorie: FilterCategorie) => void;
-  addOptie: (categorieId: FilterCategorieId, optie: FilterOptie) => void;
-  updateOptie: (categorieId: FilterCategorieId, optieId: string, updates: Partial<FilterOptie>) => void;
-  deleteOptie: (categorieId: FilterCategorieId, optieId: string) => void;
-  reorderOpties: (categorieId: FilterCategorieId, optieIds: string[]) => void;
-  resetConfig: () => void;
+  // Actions (async)
+  loadConfig: () => Promise<void>;
+  updateCategorie: (categorie: FilterCategorie) => Promise<void>;
+  addOptie: (categorieId: FilterCategorieId, optie: FilterOptie) => Promise<void>;
+  updateOptie: (categorieId: FilterCategorieId, optieId: string, updates: Partial<FilterOptie>) => Promise<void>;
+  deleteOptie: (categorieId: FilterCategorieId, optieId: string) => Promise<void>;
+  reorderOpties: (categorieId: FilterCategorieId, optieIds: string[]) => Promise<void>;
+  resetConfig: () => Promise<void>;
 
   // Selectors
   getCategorie: (categorieId: FilterCategorieId) => FilterCategorie;
@@ -25,107 +26,93 @@ interface FilterConfigState {
 }
 
 export const useFilterConfigStore = create<FilterConfigState>((set, get) => ({
-  config: filterConfigStorage.getFilterConfig(),
+  config: defaultFilterConfig,
   isLoaded: false,
 
-  loadConfig: () => {
-    const config = filterConfigStorage.getFilterConfig();
+  loadConfig: async () => {
+    const config = await filterConfigStorage.getFilterConfig();
     set({ config, isLoaded: true });
   },
 
-  updateCategorie: (categorie) => {
-    filterConfigStorage.updateFilterCategorie(categorie);
-    set({ config: filterConfigStorage.getFilterConfig() });
+  updateCategorie: async (categorie) => {
+    await filterConfigStorage.updateFilterCategorie(categorie);
+    const config = await filterConfigStorage.getFilterConfig();
+    set({ config });
   },
 
-  addOptie: (categorieId, optie) => {
-    filterConfigStorage.addFilterOptie(categorieId, optie);
-    set({ config: filterConfigStorage.getFilterConfig() });
+  addOptie: async (categorieId, optie) => {
+    await filterConfigStorage.addFilterOptie(categorieId, optie);
+    const config = await filterConfigStorage.getFilterConfig();
+    set({ config });
   },
 
-  updateOptie: (categorieId, optieId, updates) => {
-    filterConfigStorage.updateFilterOptie(categorieId, optieId, updates);
-    set({ config: filterConfigStorage.getFilterConfig() });
+  updateOptie: async (categorieId, optieId, updates) => {
+    await filterConfigStorage.updateFilterOptie(categorieId, optieId, updates);
+    const config = await filterConfigStorage.getFilterConfig();
+    set({ config });
   },
 
-  deleteOptie: (categorieId, optieId) => {
-    filterConfigStorage.deleteFilterOptie(categorieId, optieId);
-    set({ config: filterConfigStorage.getFilterConfig() });
+  deleteOptie: async (categorieId, optieId) => {
+    await filterConfigStorage.deleteFilterOptie(categorieId, optieId);
+    const config = await filterConfigStorage.getFilterConfig();
+    set({ config });
   },
 
-  reorderOpties: (categorieId, optieIds) => {
-    filterConfigStorage.reorderFilterOpties(categorieId, optieIds);
-    set({ config: filterConfigStorage.getFilterConfig() });
+  reorderOpties: async (categorieId, optieIds) => {
+    await filterConfigStorage.reorderFilterOpties(categorieId, optieIds);
+    const config = await filterConfigStorage.getFilterConfig();
+    set({ config });
   },
 
-  resetConfig: () => {
-    filterConfigStorage.resetFilterConfig();
-    set({ config: filterConfigStorage.getFilterConfig() });
+  resetConfig: async () => {
+    await filterConfigStorage.resetFilterConfig();
+    const config = await filterConfigStorage.getFilterConfig();
+    set({ config });
   },
 
-  getCategorie: (categorieId) => {
-    return get().config[categorieId];
-  },
+  getCategorie: (categorieId) => get().config[categorieId],
 
   getOptiesRecord: (categorieId) => {
     const categorie = get().config[categorieId];
     return categorie.opties
-      .filter(o => o.actief)
+      .filter((o) => o.actief)
       .sort((a, b) => a.volgorde - b.volgorde)
-      .reduce((acc, optie) => {
-        acc[optie.id] = optie.label;
-        return acc;
-      }, {} as Record<string, string>);
+      .reduce((acc, optie) => { acc[optie.id] = optie.label; return acc; }, {} as Record<string, string>);
   },
 
   getKleurenRecord: (categorieId) => {
     const categorie = get().config[categorieId];
     return categorie.opties
-      .filter(o => o.actief && o.kleur)
-      .reduce((acc, optie) => {
-        acc[optie.id] = optie.kleur!;
-        return acc;
-      }, {} as Record<string, string>);
+      .filter((o) => o.actief && o.kleur)
+      .reduce((acc, optie) => { acc[optie.id] = optie.kleur!; return acc; }, {} as Record<string, string>);
   },
 
   getBeschrijvingenRecord: (categorieId) => {
     const categorie = get().config[categorieId];
     return categorie.opties
-      .filter(o => o.actief && o.beschrijving)
-      .reduce((acc, optie) => {
-        acc[optie.id] = optie.beschrijving!;
-        return acc;
-      }, {} as Record<string, string>);
+      .filter((o) => o.actief && o.beschrijving)
+      .reduce((acc, optie) => { acc[optie.id] = optie.beschrijving!; return acc; }, {} as Record<string, string>);
   },
 }));
 
-// Helper functie om record te maken van opties
+// Helper functies
 function createOptiesRecord(opties: FilterOptie[]): Record<string, string> {
   return opties
-    .filter(o => o.actief)
+    .filter((o) => o.actief)
     .sort((a, b) => a.volgorde - b.volgorde)
-    .reduce((acc, optie) => {
-      acc[optie.id] = optie.label;
-      return acc;
-    }, {} as Record<string, string>);
+    .reduce((acc, optie) => { acc[optie.id] = optie.label; return acc; }, {} as Record<string, string>);
 }
 
 function createKleurenRecord(opties: FilterOptie[]): Record<string, string> {
   return opties
-    .filter(o => o.actief && o.kleur)
-    .reduce((acc, optie) => {
-      acc[optie.id] = optie.kleur!;
-      return acc;
-    }, {} as Record<string, string>);
+    .filter((o) => o.actief && o.kleur)
+    .reduce((acc, optie) => { acc[optie.id] = optie.kleur!; return acc; }, {} as Record<string, string>);
 }
 
 function createBeschrijvingenRecord(opties: FilterOptie[]): Record<string, string> {
   return opties
-    .filter(o => o.actief && o.beschrijving)
-    .reduce((acc, optie) => {
-      acc[optie.id] = optie.beschrijving!;
-      return acc;
-    }, {} as Record<string, string>);
+    .filter((o) => o.actief && o.beschrijving)
+    .reduce((acc, optie) => { acc[optie.id] = optie.beschrijving!; return acc; }, {} as Record<string, string>);
 }
 
 // Selector hooks met useMemo voor stabiele referenties

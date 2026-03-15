@@ -25,8 +25,8 @@ function StartNode({ data, selected }: StartNodeProps) {
         className="!w-3 !h-3 !bg-green-500 !border-2 !border-white"
       />
       <div
-        className={`px-4 py-3 rounded-full bg-green-500 text-white shadow-md min-w-[100px] text-center transition-all ${
-          selected ? 'ring-2 ring-green-300 ring-offset-2' : ''
+        className={`px-4 py-3 rounded-full bg-green-600 text-white shadow-md min-w-[100px] text-center transition-all ${
+          selected ? 'ring-2 ring-green-400 ring-offset-2 ring-offset-gray-900' : ''
         }`}
       >
         <div className="flex flex-col items-center gap-1">
@@ -43,7 +43,7 @@ function StartNode({ data, selected }: StartNodeProps) {
               e.stopPropagation();
               data.onShowConnectionMenu?.(node.id, 'source');
             }}
-            className="flex items-center gap-1 px-2 py-1 bg-green-50 hover:bg-green-100 text-green-600 text-xs rounded border border-green-200 transition-colors"
+            className="flex items-center gap-1 px-2 py-1 bg-green-800/60 hover:bg-green-700/60 text-green-200 text-xs rounded border border-green-600 transition-colors"
             title="Verbinden met andere stap"
           >
             <Link size={10} />

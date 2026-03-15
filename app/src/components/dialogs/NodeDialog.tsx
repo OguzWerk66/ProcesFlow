@@ -158,14 +158,14 @@ export default function NodeDialog({ isOpen, onClose, editNode }: NodeDialogProp
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-100">
             {editNode ? 'Processtap bewerken' : 'Nieuwe processtap aanmaken'}
           </h2>
-          <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded">
-            <X className="w-5 h-5 text-slate-500" />
+          <button onClick={onClose} className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-gray-200">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -173,14 +173,14 @@ export default function NodeDialog({ isOpen, onClose, editNode }: NodeDialogProp
           <div className="p-6 space-y-4">
             {/* Titel */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Titel *
               </label>
               <input
                 type="text"
                 value={formData.titel || ''}
                 onChange={(e) => updateField('titel', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Naam van de processtap"
                 required
               />
@@ -188,26 +188,40 @@ export default function NodeDialog({ isOpen, onClose, editNode }: NodeDialogProp
 
             {/* Korte beschrijving */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Korte beschrijving
               </label>
               <textarea
                 value={formData.korteBeschrijving || ''}
                 onChange={(e) => updateField('korteBeschrijving', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px]"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px]"
                 placeholder="Beschrijf de processtap in het kort"
+              />
+            </div>
+
+            {/* Uitgebreide beschrijving (tooltip) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-1">
+                Uitgebreide beschrijving
+                <span className="ml-2 text-[10px] text-gray-500 font-normal">zichtbaar bij hoveren over de node</span>
+              </label>
+              <textarea
+                value={formData.uitgebreideBeschrijving || ''}
+                onChange={(e) => updateField('uitgebreideBeschrijving', e.target.value)}
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[120px]"
+                placeholder="Gedetailleerde beschrijving van de processtap — verschijnt als tooltip bij hoveren"
               />
             </div>
 
             {/* Fase - prominent bovenaan */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Fase *
               </label>
               <select
                 value={formData.fase || 'bereiken'}
                 onChange={(e) => updateField('fase', e.target.value as Fase)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {FASE_OPTIONS.map(option => (
                   <option key={option} value={option}>
@@ -220,13 +234,13 @@ export default function NodeDialog({ isOpen, onClose, editNode }: NodeDialogProp
             {/* Dropdowns row 1 */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-gray-400 mb-1">
                   Klantreis status *
                 </label>
                 <select
                   value={formData.klantreisStatus || 'lead'}
                   onChange={(e) => updateField('klantreisStatus', e.target.value as KlantreisStatus)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {KLANTREIS_OPTIONS.map(option => (
                     <option key={option} value={option}>
@@ -237,13 +251,13 @@ export default function NodeDialog({ isOpen, onClose, editNode }: NodeDialogProp
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-gray-400 mb-1">
                   Procesfase *
                 </label>
                 <select
                   value={formData.procesFase || 'leadgeneratie'}
                   onChange={(e) => updateField('procesFase', e.target.value as ProcesFase)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   {PROCESFASE_OPTIONS.map(option => (
                     <option key={option} value={option}>
@@ -256,13 +270,13 @@ export default function NodeDialog({ isOpen, onClose, editNode }: NodeDialogProp
 
             {/* Afdeling */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Primaire afdeling *
               </label>
               <select
                 value={formData.primaireAfdeling || 'sales'}
                 onChange={(e) => updateField('primaireAfdeling', e.target.value as Afdeling)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 {AFDELING_OPTIONS.map(option => (
                   <option key={option} value={option}>
@@ -274,24 +288,24 @@ export default function NodeDialog({ isOpen, onClose, editNode }: NodeDialogProp
 
             {/* Trigger */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Trigger
               </label>
               <textarea
                 value={formData.trigger || ''}
                 onChange={(e) => updateField('trigger', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[60px]"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[60px]"
                 placeholder="Wat triggert deze processtap?"
               />
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-700 bg-gray-900">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
             >
               Annuleren
             </button>

@@ -52,18 +52,18 @@ export function DecisionFlowchartArchiveDialog({ isOpen, onClose }: DecisionFlow
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-        <div className="relative bg-white rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
-          <div className="flex items-center justify-between p-4 border-b">
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-              <FolderOpen size={20} className="text-purple-600" />
+        <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+        <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh] flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
+              <FolderOpen size={20} className="text-purple-500" />
               Decision Flowchart Archief
             </h2>
             <button
               onClick={onClose}
-              className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-1 hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-200"
             >
-              <X size={20} className="text-gray-500" />
+              <X size={20} />
             </button>
           </div>
 
@@ -82,23 +82,25 @@ export function DecisionFlowchartArchiveDialog({ isOpen, onClose }: DecisionFlow
                     <div
                       key={flowchart.id}
                       className={`border rounded-lg p-4 hover:shadow-md transition-shadow ${
-                        flowchart.id === activeFlowchartId ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                        flowchart.id === activeFlowchartId
+                          ? 'border-purple-600 bg-purple-950/30'
+                          : 'border-gray-700 bg-gray-800 hover:bg-gray-700'
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <h3 className="font-semibold text-gray-900 truncate">
+                            <h3 className="font-semibold text-gray-100 truncate">
                               {flowchart.naam}
                             </h3>
                             {flowchart.id === activeFlowchartId && (
-                              <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full">
+                              <span className="px-2 py-0.5 text-xs bg-purple-900/60 text-purple-300 rounded-full">
                                 Actief
                               </span>
                             )}
                           </div>
                           {flowchart.beschrijving && (
-                            <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                            <p className="text-sm text-gray-400 mt-1 line-clamp-2">
                               {flowchart.beschrijving}
                             </p>
                           )}
@@ -119,7 +121,7 @@ export function DecisionFlowchartArchiveDialog({ isOpen, onClose }: DecisionFlow
                             disabled={flowchart.id === activeFlowchartId}
                             className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
                               flowchart.id === activeFlowchartId
-                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
                                 : 'bg-purple-600 text-white hover:bg-purple-700'
                             }`}
                           >
@@ -127,7 +129,7 @@ export function DecisionFlowchartArchiveDialog({ isOpen, onClose }: DecisionFlow
                           </button>
                           <button
                             onClick={() => setFlowchartToDelete(flowchart)}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-red-400 hover:bg-red-900/30 rounded-lg transition-colors"
                             title="Verwijderen"
                           >
                             <Trash2 size={18} />
@@ -140,10 +142,10 @@ export function DecisionFlowchartArchiveDialog({ isOpen, onClose }: DecisionFlow
             )}
           </div>
 
-          <div className="border-t p-4 flex justify-end">
+          <div className="border-t border-gray-700 p-4 flex justify-end bg-gray-900">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
             >
               Sluiten
             </button>

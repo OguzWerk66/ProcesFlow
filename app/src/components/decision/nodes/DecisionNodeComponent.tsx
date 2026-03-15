@@ -46,7 +46,7 @@ function DecisionNodeComponent({ data, selected }: DecisionNodeComponentProps) {
         {/* De ruit zelf */}
         <div
           className={`absolute inset-0 shadow-md border-2 border-amber-600 ${
-            selected ? 'ring-2 ring-amber-300 ring-offset-2' : ''
+            selected ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-gray-900' : ''
           }`}
           style={{
             backgroundColor: bgColor,
@@ -63,8 +63,8 @@ function DecisionNodeComponent({ data, selected }: DecisionNodeComponentProps) {
         <div
           className="absolute inset-0 flex flex-col items-center justify-center text-center p-2"
         >
-          <HelpCircle size={16} className="text-amber-700 mb-1" />
-          <span className="text-xs font-semibold text-slate-800 leading-tight max-w-[90px] line-clamp-2">
+          <HelpCircle size={16} className="text-amber-800 mb-1" />
+          <span className="text-xs font-semibold text-gray-900 leading-tight max-w-[90px] line-clamp-2">
             {node.vraag || node.titel || 'Vraag?'}
           </span>
 
@@ -75,7 +75,7 @@ function DecisionNodeComponent({ data, selected }: DecisionNodeComponentProps) {
                 e.stopPropagation();
                 data.onShowConnectionMenu?.(node.id, 'ja');
               }}
-              className="flex items-center gap-1 px-1.5 py-0.5 bg-green-50 hover:bg-green-100 text-green-600 text-[10px] rounded border border-green-200 transition-colors"
+              className="flex items-center gap-1 px-1.5 py-0.5 bg-green-900/60 hover:bg-green-800/60 text-green-300 text-[10px] rounded border border-green-700 transition-colors"
               title="Ja → Verbinden met andere stap"
             >
               <Link size={8} />
@@ -86,7 +86,7 @@ function DecisionNodeComponent({ data, selected }: DecisionNodeComponentProps) {
                 e.stopPropagation();
                 data.onShowConnectionMenu?.(node.id, 'nee');
               }}
-              className="flex items-center gap-1 px-1.5 py-0.5 bg-red-50 hover:bg-red-100 text-red-600 text-[10px] rounded border border-red-200 transition-colors"
+              className="flex items-center gap-1 px-1.5 py-0.5 bg-red-900/60 hover:bg-red-800/60 text-red-300 text-[10px] rounded border border-red-700 transition-colors"
               title="Nee → Verbinden met andere stap"
             >
               <Link size={8} />
@@ -95,7 +95,7 @@ function DecisionNodeComponent({ data, selected }: DecisionNodeComponentProps) {
           </div>
 
           {afdelingLabel && (
-            <span className="text-[10px] text-slate-600 mt-1 bg-white/70 px-1 rounded">
+            <span className="text-[10px] text-gray-700 mt-1 bg-black/20 px-1 rounded">
               {afdelingLabel}
             </span>
           )}

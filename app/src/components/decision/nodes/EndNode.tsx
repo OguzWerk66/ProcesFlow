@@ -24,8 +24,8 @@ function EndNode({ data, selected }: EndNodeProps) {
         className="!w-3 !h-3 !bg-red-500 !border-2 !border-white"
       />
       <div
-        className={`px-4 py-3 rounded-full bg-red-500 text-white shadow-md min-w-[100px] text-center transition-all ${
-          selected ? 'ring-2 ring-red-300 ring-offset-2' : ''
+        className={`px-4 py-3 rounded-full bg-red-600 text-white shadow-md min-w-[100px] text-center transition-all ${
+          selected ? 'ring-2 ring-red-400 ring-offset-2 ring-offset-gray-900' : ''
         }`}
       >
         <div className="flex items-center justify-center gap-2">

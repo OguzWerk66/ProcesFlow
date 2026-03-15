@@ -52,34 +52,34 @@ export default function EdgeEditDialog() {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={handleClose} />
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-            <Link size={20} className="text-blue-600" />
+      <div className="absolute inset-0 bg-black/70" onClick={handleClose} />
+      <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
+            <Link size={20} className="text-blue-500" />
             Link bewerken
           </h2>
           <button
             onClick={handleClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1 hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-200"
           >
-            <X size={20} className="text-gray-500" />
+            <X size={20} />
           </button>
         </div>
 
         <div className="p-4 space-y-4">
           {/* Verbinding info */}
-          <div className="p-3 bg-slate-50 rounded-lg text-sm">
-            <div className="flex items-center gap-2 text-slate-600">
+          <div className="p-3 bg-gray-800 rounded-lg text-sm">
+            <div className="flex items-center gap-2 text-gray-300">
               <span className="font-medium">{sourceNode?.titel || edge.van}</span>
-              <span className="text-slate-400">→</span>
+              <span className="text-gray-500">→</span>
               <span className="font-medium">{targetNode?.titel || edge.naar}</span>
             </div>
           </div>
 
           {/* Type selectie */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-gray-400 mb-2">
               Type verbinding
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -87,10 +87,10 @@ export default function EdgeEditDialog() {
                 <button
                   key={option.value}
                   onClick={() => setEdgeType(option.value)}
-                  className={`p-2 rounded-lg border-2 text-sm font-medium transition-all ${
+                  className={`p-2 rounded-lg border-2 text-sm font-medium transition-all text-gray-200 ${
                     edgeType === option.value
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-gray-700'
+                      : 'border-gray-700 bg-gray-800 hover:border-gray-600'
                   }`}
                 >
                   <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ export default function EdgeEditDialog() {
 
           {/* Label */}
           <div>
-            <label htmlFor="edge-label" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="edge-label" className="block text-sm font-medium text-gray-400 mb-1">
               Label (optioneel)
             </label>
             <input
@@ -116,13 +116,13 @@ export default function EdgeEditDialog() {
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               placeholder="bv. Goedgekeurd, Afgewezen..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           {/* Conditie */}
           <div>
-            <label htmlFor="edge-conditie" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="edge-conditie" className="block text-sm font-medium text-gray-400 mb-1">
               Conditie (optioneel)
             </label>
             <textarea
@@ -131,15 +131,15 @@ export default function EdgeEditDialog() {
               onChange={(e) => setConditie(e.target.value)}
               placeholder="Wanneer wordt deze verbinding gevolgd?"
               rows={2}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-end gap-3 p-4 border-t bg-gray-50">
+        <div className="flex items-center justify-end gap-3 p-4 border-t border-gray-700 bg-gray-900">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
           >
             Annuleren
           </button>

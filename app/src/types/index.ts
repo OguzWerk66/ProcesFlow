@@ -142,6 +142,7 @@ export interface ProcesNode {
   versie: VersieInfo;
   tags?: string[];
   notities?: string;
+  uitgebreideBeschrijving?: string;
   position?: NodePosition;
 }
 
@@ -196,6 +197,7 @@ export interface Canvas {
   laatstGewijzigd: string;
   nodes: ProcesNode[];
   edges: ProcesEdge[];
+  bronTekst?: string;
 }
 
 // Metadata voor canvas lijst (zonder volledige data)

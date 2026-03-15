@@ -11,8 +11,10 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   Panel,
+  useReactFlow,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import dagre from '@dagrejs/dagre';
 
 import ProcessNode, { type ProcessNodeData } from './ProcessNode';
 import ProcessEdge from './ProcessEdge';
@@ -28,77 +30,63 @@ const edgeTypes = {
   procesEdge: ProcessEdge,
 } as const;
 
-// Helper functie om een default positie te berekenen voor nodes zonder opgeslagen positie
-function calculateDefaultPosition(node: ProcesNode, allNodes: ProcesNode[]): { x: number; y: number } {
-  const PROCESFASE_ORDER = [
-    'leadgeneratie',
-    'intake',
-    'aanvraag',
-    'beoordeling',
-    'activatie',
-    'onboarding',
-    'lopend-lidmaatschap',
-    'wijzigingen',
-    'beeindiging',
-  ];
+const NODE_WIDTH = 240;
+const NODE_HEIGHT = 140;
 
-  const AFDELING_ORDER = [
-    'sales',
-    'ledenadministratie',
-    'legal',
-    'finance',
-    'marcom',
-    'deelnemingen',
-    'it',
-    'bestuur',
-  ];
+// Dagre auto-layout: positioneert alle opgegeven nodes op basis van de edges
+function applyDagreLayout(
+  nodes: ProcesNode[],
+  edges: ProcesEdge[],
+): Map<string, { x: number; y: number }> {
+  const g = new dagre.graphlib.Graph();
+  g.setDefaultEdgeLabel(() => ({}));
+  g.setGraph({ rankdir: 'LR', nodesep: 50, ranksep: 100, marginx: 60, marginy: 60 });
 
-  const X_SPACING = 320;
-  const Y_SPACING = 200;
-  const NODE_OFFSET_X = 250;
-  const NODE_OFFSET_Y = 160;
+  const nodeIds = new Set(nodes.map((n) => n.id));
 
-  // Groepeer nodes per procesfase en afdeling
-  const nodesByFaseAndAfdeling: Record<string, Record<string, ProcesNode[]>> = {};
-  allNodes.forEach((n) => {
-    if (!nodesByFaseAndAfdeling[n.procesFase]) {
-      nodesByFaseAndAfdeling[n.procesFase] = {};
-    }
-    if (!nodesByFaseAndAfdeling[n.procesFase][n.primaireAfdeling]) {
-      nodesByFaseAndAfdeling[n.procesFase][n.primaireAfdeling] = [];
-    }
-    nodesByFaseAndAfdeling[n.procesFase][n.primaireAfdeling].push(n);
+  nodes.forEach((node) => {
+    g.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
   });
 
-  const faseIndex = PROCESFASE_ORDER.indexOf(node.procesFase);
-  const afdelingIndex = AFDELING_ORDER.indexOf(node.primaireAfdeling);
+  edges
+    .filter((e) => nodeIds.has(e.van) && nodeIds.has(e.naar))
+    .forEach((edge) => {
+      g.setEdge(edge.van, edge.naar);
+    });
 
-  const nodesInCell = nodesByFaseAndAfdeling[node.procesFase]?.[node.primaireAfdeling] || [];
-  const indexInCell = nodesInCell.indexOf(node);
+  dagre.layout(g);
 
-  const col = indexInCell % 2;
-  const row = Math.floor(indexInCell / 2);
+  const positions = new Map<string, { x: number; y: number }>();
+  nodes.forEach((node) => {
+    const pos = g.node(node.id);
+    positions.set(node.id, {
+      x: pos.x - NODE_WIDTH / 2,
+      y: pos.y - NODE_HEIGHT / 2,
+    });
+  });
 
-  const x = (faseIndex >= 0 ? faseIndex : 0) * X_SPACING + col * NODE_OFFSET_X;
-  const y = (afdelingIndex >= 0 ? afdelingIndex : 0) * Y_SPACING + row * NODE_OFFSET_Y;
-
-  return { x, y };
+  return positions;
 }
 
-// Helper functie om nodes te positioneren - gebruikt opgeslagen posities of berekent nieuwe
-function calculateNodePositions(nodes: ProcesNode[], allStoreNodes: ProcesNode[]): Node[] {
-  return nodes.map((node) => {
-    // Gebruik opgeslagen positie als deze bestaat, anders bereken default
-    const position = node.position || calculateDefaultPosition(node, allStoreNodes);
+// Bouw ReactFlow nodes op — gebruik opgeslagen positie als die bestaat, anders dagre
+function buildFlowNodes(
+  filteredNodes: ProcesNode[],
+  allStoreNodes: ProcesNode[],
+  storeEdges: ProcesEdge[],
+): Node[] {
+  const unpositioned = filteredNodes.filter((n) => !n.position);
+  const dagrePositions =
+    unpositioned.length > 0
+      ? applyDagreLayout(filteredNodes, storeEdges) // layout álle nodes zodat dagre verbindingen meeneemt
+      : new Map<string, { x: number; y: number }>();
 
-    return {
-      id: node.id,
-      type: 'procesNode',
-      position,
-      data: { procesNode: node },
-      draggable: true,
-    };
-  });
+  return filteredNodes.map((node) => ({
+    id: node.id,
+    type: 'procesNode',
+    position: node.position ?? dagrePositions.get(node.id) ?? { x: 0, y: 0 },
+    data: { procesNode: node },
+    draggable: true,
+  }));
 }
 
 function convertEdges(edges: ProcesEdge[], nodeIds: Set<string>): Edge[] {
@@ -123,38 +111,43 @@ export default function FlowCanvas() {
   const setSelectedNode = useStore((state) => state.setSelectedNode);
   const updateNode = useStore((state) => state.updateNode);
   const filteredNodes = useFilteredNodes();
+  const { fitView } = useReactFlow();
 
-  // Gebruik useState voor nodes zodat ze verplaatst kunnen worden
-  const [nodes, setNodes] = useState<Node[]>(() => calculateNodePositions(filteredNodes, storeNodes));
+  const [nodes, setNodes] = useState<Node[]>(() =>
+    buildFlowNodes(filteredNodes, storeNodes, storeEdges)
+  );
   const [edges, setEdges] = useState<Edge[]>(() => {
     const nodeIds = new Set(filteredNodes.map((n) => n.id));
     return convertEdges(storeEdges, nodeIds);
   });
 
-  // Track previous state to detect changes
-  const prevFilteredNodeIds = useRef<string>(filteredNodes.map(n => n.id).sort().join(','));
-  const prevStoreEdgesRef = useRef<string>(JSON.stringify(storeEdges.map(e => e.id).sort()));
+  const prevFilteredNodeIds = useRef<string>(filteredNodes.map((n) => n.id).sort().join(','));
+  const prevStoreEdgesRef = useRef<string>(JSON.stringify(storeEdges.map((e) => e.id).sort()));
 
-  // Sync with store when filtered nodes or edges change
   useEffect(() => {
-    const currentFilteredIds = filteredNodes.map(n => n.id).sort().join(',');
-    const currentEdgeIds = JSON.stringify(storeEdges.map(e => e.id).sort());
+    const currentFilteredIds = filteredNodes.map((n) => n.id).sort().join(',');
+    const currentEdgeIds = JSON.stringify(storeEdges.map((e) => e.id).sort());
     const filterChanged = prevFilteredNodeIds.current !== currentFilteredIds;
     const edgesChanged = prevStoreEdgesRef.current !== currentEdgeIds;
 
     if (filterChanged || edgesChanged) {
-      // Recalculate nodes - positions komen uit store (node.position)
-      setNodes(calculateNodePositions(filteredNodes, storeNodes));
+      const prevCount = prevFilteredNodeIds.current.split(',').filter(Boolean).length;
+      const newCount = filteredNodes.length;
+      const bigChange = Math.abs(newCount - prevCount) > 3;
 
+      setNodes(buildFlowNodes(filteredNodes, storeNodes, storeEdges));
       const nodeIds = new Set(filteredNodes.map((n) => n.id));
       setEdges(convertEdges(storeEdges, nodeIds));
-
       prevFilteredNodeIds.current = currentFilteredIds;
       prevStoreEdgesRef.current = currentEdgeIds;
-    }
-  }, [filteredNodes, storeEdges, storeNodes]);
 
-  // Handlers voor node/edge changes (drag, select, etc.)
+      // Fit view after a significant node change (e.g. import)
+      if (bigChange && newCount > 0) {
+        setTimeout(() => fitView({ padding: 0.15, maxZoom: 0.8, duration: 400 }), 50);
+      }
+    }
+  }, [filteredNodes, storeEdges, storeNodes, fitView]);
+
   const onNodesChange: OnNodesChange = useCallback(
     (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
     []
@@ -165,36 +158,44 @@ export default function FlowCanvas() {
     []
   );
 
-  // Handler voor wanneer een node wordt verplaatst - sla positie op in store
   const onNodeDragStop = useCallback(
     (_event: React.MouseEvent, node: Node) => {
-      // Update de positie in de store zodat deze behouden blijft
       updateNode(node.id, { position: { x: node.position.x, y: node.position.y } });
     },
     [updateNode]
   );
 
-  // Reset layout knop - verwijdert alle opgeslagen posities
-  const resetLayout = useCallback(() => {
-    // Reset posities in store naar undefined zodat ze opnieuw berekend worden
-    filteredNodes.forEach(node => {
-      updateNode(node.id, { position: undefined });
+  // Auto-layout: past dagre toe op álle zichtbare nodes en slaat posities op
+  const autoLayout = useCallback(() => {
+    const nodesForLayout = filteredNodes.map((n) => ({ ...n, position: undefined }));
+    const positions = applyDagreLayout(nodesForLayout, storeEdges);
+
+    // Sla nieuwe posities op in store
+    filteredNodes.forEach((node) => {
+      const pos = positions.get(node.id);
+      if (pos) updateNode(node.id, { position: pos });
     });
-    // Herbereken posities
-    setNodes(calculateNodePositions(
-      filteredNodes.map(n => ({ ...n, position: undefined })),
-      storeNodes.map(n => ({ ...n, position: undefined }))
-    ));
-    const ids = new Set(filteredNodes.map((n) => n.id));
-    setEdges(convertEdges(storeEdges, ids));
-  }, [filteredNodes, storeNodes, storeEdges, updateNode]);
+
+    setNodes(
+      filteredNodes.map((node) => ({
+        id: node.id,
+        type: 'procesNode',
+        position: positions.get(node.id) ?? { x: 0, y: 0 },
+        data: { procesNode: node },
+        draggable: true,
+      }))
+    );
+
+    const nodeIds = new Set(filteredNodes.map((n) => n.id));
+    setEdges(convertEdges(storeEdges, nodeIds));
+
+    setTimeout(() => fitView({ padding: 0.15, maxZoom: 0.8, duration: 400 }), 50);
+  }, [filteredNodes, storeEdges, updateNode, fitView]);
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
       const procesNode = filteredNodes.find((n) => n.id === node.id);
-      if (procesNode) {
-        setSelectedNode(procesNode);
-      }
+      if (procesNode) setSelectedNode(procesNode);
     },
     [filteredNodes, setSelectedNode]
   );
@@ -216,42 +217,42 @@ export default function FlowCanvas() {
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
         fitView
+        fitViewOptions={{ padding: 0.15, maxZoom: 0.8 }}
         minZoom={0.1}
         maxZoom={2}
-        defaultViewport={{ x: 0, y: 0, zoom: 0.4 }}
         proOptions={{ hideAttribution: true }}
         nodesDraggable={true}
         elementsSelectable={true}
       >
-        <Background color="#e2e8f0" gap={20} />
-        <Controls className="!shadow-md !border !border-slate-200" />
+        <Background color="#1e293b" gap={20} />
+        <Controls className="!shadow-md !border !border-gray-700 !bg-gray-900" />
         <MiniMap
           nodeColor={(node) => {
             const data = node.data as ProcessNodeData | undefined;
             const procesNode = data?.procesNode;
             return procesNode
-              ? AFDELING_KLEUREN[procesNode.primaireAfdeling] || '#f3f4f6'
-              : '#f3f4f6';
+              ? AFDELING_KLEUREN[procesNode.primaireAfdeling] || '#374151'
+              : '#374151';
           }}
-          maskColor="rgba(0,0,0,0.1)"
-          className="!shadow-md !border !border-slate-200"
+          maskColor="rgba(0,0,0,0.4)"
+          className="!shadow-md !border !border-gray-700 !bg-gray-900"
           pannable
           zoomable
         />
-        <Panel position="top-left" className="bg-white/90 px-3 py-2 rounded-lg shadow-sm border border-slate-200">
+        <Panel position="top-left" className="bg-gray-900/90 px-3 py-2 rounded-lg shadow-sm border border-gray-700">
           <div className="flex items-center gap-4">
-            <div className="text-sm text-slate-600">
-              <span className="font-medium">{filteredNodes.length}</span> processtappen
+            <div className="text-sm text-gray-400">
+              <span className="font-medium text-gray-200">{filteredNodes.length}</span> processtappen
             </div>
             <button
-              onClick={resetLayout}
-              className="text-xs px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-600 transition-colors"
+              onClick={autoLayout}
+              className="text-xs px-2 py-1 bg-blue-900/60 hover:bg-blue-800/60 border border-blue-700 rounded text-blue-300 transition-colors"
             >
-              Reset layout
+              Auto-layout
             </button>
           </div>
         </Panel>
-        <Panel position="top-right" className="bg-white/90 px-3 py-2 rounded-lg shadow-sm border border-slate-200 text-xs text-slate-500">
+        <Panel position="top-right" className="bg-gray-900/90 px-3 py-2 rounded-lg shadow-sm border border-gray-700 text-xs text-gray-500">
           Sleep nodes om te verplaatsen
         </Panel>
       </ReactFlow>

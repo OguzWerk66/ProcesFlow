@@ -18,15 +18,15 @@ export default function EdgeContextMenu({ x, y, onDelete, onClose }: EdgeContext
 
       {/* Context menu */}
       <div
-        className="fixed z-50 bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[160px]"
+        className="fixed z-50 bg-gray-900 rounded-lg shadow-xl border border-gray-700 py-1 min-w-[160px]"
         style={{
           left: x,
           top: y,
           transform: 'translate(-50%, 8px)'
         }}
       >
-        <div className="px-3 py-2 border-b border-slate-100">
-          <span className="text-xs font-medium text-slate-500">
+        <div className="px-3 py-2 border-b border-gray-700">
+          <span className="text-xs font-medium text-gray-500">
             Link opties
           </span>
         </div>
@@ -36,12 +36,12 @@ export default function EdgeContextMenu({ x, y, onDelete, onClose }: EdgeContext
             onDelete();
             onClose();
           }}
-          className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-red-50 transition-colors"
+          className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-red-900/30 transition-colors"
         >
-          <span className="text-red-600">
+          <span className="text-red-400">
             <Trash2 size={16} />
           </span>
-          <span className="text-slate-700 font-medium">Verwijderen</span>
+          <span className="text-gray-200 font-medium">Verwijderen</span>
         </button>
       </div>
     </>

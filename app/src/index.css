@@ -10,7 +10,7 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #f8fafc;
+  background-color: #030712;
 }
 
 #root {
@@ -28,7 +28,12 @@ body {
 }
 
 .react-flow__controls {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Dark background for ReactFlow */
+.react-flow__background {
+  background-color: #030712;
 }
 
 /* Scrollbar styling */
@@ -38,14 +43,14 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #374151;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #6b7280;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #9ca3af;
 }

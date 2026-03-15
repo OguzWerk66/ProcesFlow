@@ -38,39 +38,39 @@ function SubprocessNode({ data, selected }: SubprocessNodeProps) {
       {/* Dubbele rand effect voor subprocess */}
       <div
         className={`relative px-4 py-3 rounded-lg shadow-md min-w-[160px] max-w-[200px] transition-all ${
-          selected ? 'ring-2 ring-purple-300 ring-offset-2' : ''
+          selected ? 'ring-2 ring-purple-400 ring-offset-2 ring-offset-gray-900' : ''
         }`}
         style={{ backgroundColor: bgColor }}
       >
         {/* Binnenste rand voor dubbel-rand effect */}
         <div
-          className="absolute inset-1 border-2 border-purple-400 rounded pointer-events-none"
+          className="absolute inset-1 border-2 border-purple-500 rounded pointer-events-none"
         />
 
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
-            <Layers size={14} className="text-purple-600" />
-            <span className="text-xs text-purple-600 font-medium">Subprocess</span>
+            <Layers size={14} className="text-purple-700" />
+            <span className="text-xs text-purple-700 font-medium">Subprocess</span>
           </div>
 
-          <h3 className="font-semibold text-sm text-slate-800 leading-tight mb-1">
+          <h3 className="font-semibold text-sm text-gray-900 leading-tight mb-1">
             {node.titel || 'Subprocess'}
           </h3>
 
           {node.beschrijving && (
-            <p className="text-xs text-slate-600 line-clamp-2 mb-1">
+            <p className="text-xs text-gray-700 line-clamp-2 mb-1">
               {node.beschrijving}
             </p>
           )}
 
           {afdelingLabel && (
-            <div className="text-[10px] text-slate-500 mt-1 pt-1 border-t border-slate-200">
+            <div className="text-[10px] text-gray-600 mt-1 pt-1 border-t border-gray-400/30">
               {afdelingLabel}
             </div>
           )}
 
           {(node.linkedProcessId || node.linkedFlowchartId) && (
-            <div className="text-[10px] text-purple-500 mt-1">
+            <div className="text-[10px] text-purple-600 mt-1">
               Gekoppeld
             </div>
           )}

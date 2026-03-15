@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { X, Clock, Users, FileText, AlertTriangle, ArrowRight, Database, BookOpen, Edit3, Save, XCircle, Plus, Trash2, Link } from 'lucide-react';
 import { useStore } from '../../store/useStore';
 import { AFDELING_LABELS, KLANTREIS_LABELS, PROCESFASE_LABELS, FASE_LABELS } from '../../types';
-import type { ProcesNode } from '../../types';
+import type { ProcesNode, Afdeling, KlantreisStatus, ProcesFase, Fase } from '../../types';
 import { ConfirmDialog } from '../dialogs';
 
 interface SectionProps {
@@ -16,7 +16,7 @@ function Section({ title, icon, children }: SectionProps) {
     <div className="mb-4">
       <div className="flex items-center gap-2 mb-2">
         {icon}
-        <h3 className="font-semibold text-slate-800 text-sm">{title}</h3>
+        <h3 className="font-semibold text-gray-200 text-sm">{title}</h3>
       </div>
       <div className="pl-6">{children}</div>
     </div>
@@ -25,10 +25,10 @@ function Section({ title, icon, children }: SectionProps) {
 
 function Badge({ children, variant = 'default' }: { children: React.ReactNode; variant?: 'default' | 'info' | 'warning' | 'error' }) {
   const colors = {
-    default: 'bg-slate-100 text-slate-700',
-    info: 'bg-blue-100 text-blue-700',
-    warning: 'bg-amber-100 text-amber-700',
-    error: 'bg-red-100 text-red-700',
+    default: 'bg-gray-600 text-gray-200',
+    info: 'bg-blue-900/60 text-blue-300',
+    warning: 'bg-amber-900/60 text-amber-300',
+    error: 'bg-red-900/60 text-red-300',
   };
 
   return (
@@ -55,7 +55,7 @@ function EditableText({
   className?: string;
 }) {
   if (!isEditing) {
-    return <span className={className}>{value || <span className="text-slate-400 italic">{placeholder}</span>}</span>;
+    return <span className={className}>{value || <span className="text-gray-500 italic">{placeholder}</span>}</span>;
   }
 
   if (multiline) {
@@ -64,7 +64,7 @@ function EditableText({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[60px] ${className}`}
+        className={`w-full px-2 py-1 text-sm bg-gray-600 border border-gray-400 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[60px] ${className}`}
       />
     );
   }
@@ -75,7 +75,7 @@ function EditableText({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
-      className={`w-full px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+      className={`w-full px-2 py-1 text-sm bg-gray-600 border border-gray-400 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
     />
   );
 }
@@ -111,8 +111,8 @@ function EditableList({
       <ul className="text-sm space-y-1">
         {items.map((item, i) => (
           <li key={i} className="flex items-start gap-2">
-            <span className="text-slate-400">•</span>
-            <span className="text-slate-700">{item}</span>
+            <span className="text-gray-500">•</span>
+            <span className="text-gray-300">{item}</span>
           </li>
         ))}
       </ul>
@@ -128,11 +128,11 @@ function EditableList({
             value={item}
             onChange={(e) => updateItem(i, e.target.value)}
             placeholder={placeholder}
-            className="flex-1 px-2 py-1 text-sm border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 px-2 py-1 text-sm bg-gray-600 border border-gray-400 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={() => removeItem(i)}
-            className="p-1 text-red-500 hover:bg-red-50 rounded"
+            className="p-1 text-red-400 hover:bg-red-900/30 rounded"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -140,7 +140,7 @@ function EditableList({
       ))}
       <button
         onClick={addItem}
-        className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 px-2 py-1 hover:bg-blue-50 rounded"
+        className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 px-2 py-1 hover:bg-gray-500 rounded"
       >
         <Plus className="w-3 h-3" /> Toevoegen
       </button>
@@ -217,26 +217,26 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
   };
 
   return (
-    <aside className="w-96 bg-white border-l border-slate-200 h-full flex flex-col overflow-hidden shadow-lg">
+    <aside className="w-96 bg-gray-700 border-l border-gray-500 h-full flex flex-col overflow-hidden shadow-xl">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-slate-200">
+      <div className="px-4 py-3 border-b border-gray-500">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <Badge variant="info">
                 {FASE_LABELS[node.fase]}
               </Badge>
-              <span className="text-xs text-slate-400">{node.id}</span>
+              <span className="text-xs text-gray-500">{node.id}</span>
             </div>
             {isEditing ? (
               <input
                 type="text"
                 value={editedNode?.titel || ''}
                 onChange={(e) => updateField('titel', e.target.value)}
-                className="w-full font-semibold text-slate-900 text-lg px-2 py-1 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full font-semibold text-gray-100 text-lg px-2 py-1 bg-gray-700 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             ) : (
-              <h2 className="font-semibold text-slate-900 text-lg leading-tight">
+              <h2 className="font-semibold text-gray-100 text-lg leading-tight">
                 {node.titel}
               </h2>
             )}
@@ -244,10 +244,10 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
               <textarea
                 value={editedNode?.korteBeschrijving || ''}
                 onChange={(e) => updateField('korteBeschrijving', e.target.value)}
-                className="w-full text-sm text-slate-600 mt-1 px-2 py-1 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[40px]"
+                className="w-full text-sm text-gray-300 mt-1 px-2 py-1 bg-gray-700 border border-gray-500 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[40px]"
               />
             ) : (
-              <p className="text-sm text-slate-600 mt-1">{node.korteBeschrijving}</p>
+              <p className="text-sm text-gray-400 mt-1">{node.korteBeschrijving}</p>
             )}
           </div>
           <div className="flex items-center gap-1 ml-2 flex-shrink-0">
@@ -255,21 +255,21 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
               <>
                 <button
                   onClick={() => onAddEdge?.(node.id)}
-                  className="p-1.5 hover:bg-purple-50 rounded text-purple-600"
+                  className="p-1.5 hover:bg-purple-900/30 rounded text-purple-400"
                   title="Link toevoegen vanaf deze stap"
                 >
                   <Link className="w-4 h-4" />
                 </button>
                 <button
                   onClick={startEditing}
-                  className="p-1.5 hover:bg-blue-50 rounded text-blue-600"
+                  className="p-1.5 hover:bg-blue-900/30 rounded text-blue-400"
                   title="Bewerken"
                 >
                   <Edit3 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setDeleteNodeConfirm(true)}
-                  className="p-1.5 hover:bg-red-50 rounded text-red-600"
+                  className="p-1.5 hover:bg-red-900/30 rounded text-red-400"
                   title="Verwijderen"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -278,16 +278,16 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
             )}
             <button
               onClick={closeDetailPanel}
-              className="p-1 hover:bg-slate-100 rounded"
+              className="p-1 hover:bg-gray-500 rounded text-gray-400 hover:text-gray-200"
             >
-              <X className="w-5 h-5 text-slate-500" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Edit mode buttons */}
         {isEditing && (
-          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200">
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-500">
             <button
               onClick={saveChanges}
               className="flex items-center gap-1 px-3 py-1.5 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
@@ -296,7 +296,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
             </button>
             <button
               onClick={cancelEditing}
-              className="flex items-center gap-1 px-3 py-1.5 bg-slate-100 text-slate-700 text-sm rounded hover:bg-slate-200"
+              className="flex items-center gap-1 px-3 py-1.5 bg-gray-600 text-gray-200 text-sm rounded hover:bg-gray-500"
             >
               <XCircle className="w-4 h-4" /> Annuleren
             </button>
@@ -306,58 +306,111 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-4">
-        {/* Metadata badges */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          <Badge>{KLANTREIS_LABELS[node.klantreisStatus]}</Badge>
-          <Badge>{PROCESFASE_LABELS[node.procesFase]}</Badge>
-          <Badge>{AFDELING_LABELS[node.primaireAfdeling]}</Badge>
-        </div>
+        {/* Metadata badges / edit selects */}
+        {isEditing ? (
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            <div>
+              <label className="block text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Fase</label>
+              <select
+                value={editedNode?.fase || node.fase}
+                onChange={(e) => updateField('fase', e.target.value as Fase)}
+                className="w-full px-2 py-1.5 text-xs bg-gray-600 border border-gray-400 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {(['bereiken','boeien','binden','behouden'] as Fase[]).map(f => (
+                  <option key={f} value={f}>{FASE_LABELS[f]}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Afdeling</label>
+              <select
+                value={editedNode?.primaireAfdeling || node.primaireAfdeling}
+                onChange={(e) => updateField('primaireAfdeling', e.target.value as Afdeling)}
+                className="w-full px-2 py-1.5 text-xs bg-gray-600 border border-gray-400 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {(['sales','ledenadministratie','legal','finance','marcom','it','deelnemingen','bestuur'] as Afdeling[]).map(a => (
+                  <option key={a} value={a}>{AFDELING_LABELS[a]}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Klantreis</label>
+              <select
+                value={editedNode?.klantreisStatus || node.klantreisStatus}
+                onChange={(e) => updateField('klantreisStatus', e.target.value as KlantreisStatus)}
+                className="w-full px-2 py-1.5 text-xs bg-gray-600 border border-gray-400 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {(['lead','prospect','aanvrager','aanvrager-bestaand','lid','opzegger','ex-lid'] as KlantreisStatus[]).map(k => (
+                  <option key={k} value={k}>{KLANTREIS_LABELS[k]}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-[10px] text-gray-400 mb-1 uppercase tracking-wide">Procesfase</label>
+              <select
+                value={editedNode?.procesFase || node.procesFase}
+                onChange={(e) => updateField('procesFase', e.target.value as ProcesFase)}
+                className="w-full px-2 py-1.5 text-xs bg-gray-600 border border-gray-400 text-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {(['leadgeneratie','intake','aanvraag','beoordeling','activatie','onboarding','lopend-lidmaatschap','wijzigingen','beeindiging'] as ProcesFase[]).map(p => (
+                  <option key={p} value={p}>{PROCESFASE_LABELS[p]}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-2 mb-4">
+            <Badge>{KLANTREIS_LABELS[node.klantreisStatus]}</Badge>
+            <Badge>{PROCESFASE_LABELS[node.procesFase]}</Badge>
+            <Badge>{AFDELING_LABELS[node.primaireAfdeling]}</Badge>
+          </div>
+        )}
 
         {/* Trigger */}
-        <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
-          <div className="text-xs font-medium text-blue-600 mb-1">Trigger</div>
+        <div className="mb-4 p-3 bg-blue-950/50 rounded-lg border border-blue-800">
+          <div className="text-xs font-medium text-blue-300 mb-1">Trigger</div>
           <EditableText
             value={node.trigger}
             onChange={(value) => updateField('trigger', value)}
             isEditing={isEditing}
             multiline
-            className="text-sm text-blue-900"
+            className="text-sm text-blue-300"
           />
         </div>
 
         {/* Doorlooptijd */}
         {(node.doorlooptijd || isEditing) && (
-          <Section title="Doorlooptijd" icon={<Clock className="w-4 h-4 text-slate-400" />}>
+          <Section title="Doorlooptijd" icon={<Clock className="w-4 h-4 text-gray-500" />}>
             <div className="text-sm space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-slate-500 w-20">Standaard:</span>
+                <span className="text-gray-500 w-20">Standaard:</span>
                 <EditableText
                   value={node.doorlooptijd?.standaard || ''}
                   onChange={(value) => updateField('doorlooptijd', { ...node.doorlooptijd, standaard: value, maximum: node.doorlooptijd?.maximum || '' })}
                   isEditing={isEditing}
                   placeholder="bv. 2 werkdagen"
-                  className="font-medium"
+                  className="font-medium text-gray-200"
                 />
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-slate-500 w-20">Maximum:</span>
+                <span className="text-gray-500 w-20">Maximum:</span>
                 <EditableText
                   value={node.doorlooptijd?.maximum || ''}
                   onChange={(value) => updateField('doorlooptijd', { ...node.doorlooptijd, standaard: node.doorlooptijd?.standaard || '', maximum: value })}
                   isEditing={isEditing}
                   placeholder="bv. 5 werkdagen"
-                  className="font-medium"
+                  className="font-medium text-gray-200"
                 />
               </div>
               {(node.doorlooptijd?.escalatieBij || isEditing) && (
                 <div className="flex items-start gap-2">
-                  <span className="text-slate-500 w-20 flex-shrink-0">Escalatie:</span>
+                  <span className="text-gray-500 w-20 flex-shrink-0">Escalatie:</span>
                   <EditableText
                     value={node.doorlooptijd?.escalatieBij || ''}
                     onChange={(value) => updateField('doorlooptijd', { ...node.doorlooptijd, standaard: node.doorlooptijd?.standaard || '', maximum: node.doorlooptijd?.maximum || '', escalatieBij: value })}
                     isEditing={isEditing}
                     placeholder="Wanneer escaleren?"
-                    className="text-amber-600 text-xs"
+                    className="text-amber-400 text-xs"
                   />
                 </div>
               )}
@@ -367,7 +420,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
 
         {/* Acties */}
         {(node.acties.length > 0 || isEditing) && (
-          <Section title="Acties" icon={<FileText className="w-4 h-4 text-slate-400" />}>
+          <Section title="Acties" icon={<FileText className="w-4 h-4 text-gray-500" />}>
             <EditableList
               items={node.acties}
               onChange={(items) => updateField('acties', items)}
@@ -379,14 +432,14 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
 
         {/* RACI */}
         {node.raci.length > 0 && (
-          <Section title="RACI" icon={<Users className="w-4 h-4 text-slate-400" />}>
+          <Section title="RACI" icon={<Users className="w-4 h-4 text-gray-500" />}>
             <div className="space-y-2">
               {['R', 'A', 'C', 'I'].map((type) => {
                 const entries = node.raci.filter((r) => r.type === type);
                 if (entries.length === 0) return null;
                 return (
                   <div key={type} className="text-sm">
-                    <span className="font-medium text-slate-700 w-24 inline-block">
+                    <span className="font-medium text-gray-300 w-24 inline-block">
                       {type === 'R' && 'Responsible'}
                       {type === 'A' && 'Accountable'}
                       {type === 'C' && 'Consulted'}
@@ -394,7 +447,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
                     </span>
                     <div className="pl-4">
                       {entries.map((entry, i) => (
-                        <div key={i} className="text-slate-600">
+                        <div key={i} className="text-gray-400">
                           {entry.rol} ({AFDELING_LABELS[entry.afdeling]})
                         </div>
                       ))}
@@ -410,7 +463,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
         <div className="grid grid-cols-2 gap-4 mb-4">
           {(node.inputs.length > 0 || isEditing) && (
             <div>
-              <h4 className="text-xs font-medium text-slate-500 mb-1">Inputs</h4>
+              <h4 className="text-xs font-medium text-gray-500 mb-1">Inputs</h4>
               {isEditing ? (
                 <EditableList
                   items={node.inputs}
@@ -421,7 +474,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
               ) : (
                 <ul className="text-xs space-y-0.5">
                   {node.inputs.map((input, i) => (
-                    <li key={i} className="text-slate-600">• {input}</li>
+                    <li key={i} className="text-gray-400">• {input}</li>
                   ))}
                 </ul>
               )}
@@ -429,7 +482,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
           )}
           {(node.outputs.length > 0 || isEditing) && (
             <div>
-              <h4 className="text-xs font-medium text-slate-500 mb-1">Outputs</h4>
+              <h4 className="text-xs font-medium text-gray-500 mb-1">Outputs</h4>
               {isEditing ? (
                 <EditableList
                   items={node.outputs}
@@ -440,7 +493,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
               ) : (
                 <ul className="text-xs space-y-0.5">
                   {node.outputs.map((output, i) => (
-                    <li key={i} className="text-slate-600">• {output}</li>
+                    <li key={i} className="text-gray-400">• {output}</li>
                   ))}
                 </ul>
               )}
@@ -450,12 +503,12 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
 
         {/* Uitzonderingen */}
         {node.uitzonderingen.length > 0 && (
-          <Section title="Uitzonderingen" icon={<AlertTriangle className="w-4 h-4 text-amber-500" />}>
+          <Section title="Uitzonderingen" icon={<AlertTriangle className="w-4 h-4 text-amber-400" />}>
             <div className="space-y-2">
               {node.uitzonderingen.map((uitzondering) => (
-                <div key={uitzondering.id} className="text-sm p-2 bg-amber-50 rounded border border-amber-100">
-                  <div className="font-medium text-amber-800">{uitzondering.conditie}</div>
-                  <div className="text-amber-700 text-xs mt-1">{uitzondering.actie}</div>
+                <div key={uitzondering.id} className="text-sm p-2 bg-amber-950/50 rounded border border-amber-800">
+                  <div className="font-medium text-amber-300">{uitzondering.conditie}</div>
+                  <div className="text-amber-400 text-xs mt-1">{uitzondering.actie}</div>
                 </div>
               ))}
             </div>
@@ -464,23 +517,23 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
 
         {/* Handovers / Verbindingen */}
         {(outgoingEdges.length > 0 || incomingEdges.length > 0 || canEdit) && (
-          <Section title="Verbindingen" icon={<ArrowRight className="w-4 h-4 text-slate-400" />}>
+          <Section title="Verbindingen" icon={<ArrowRight className="w-4 h-4 text-gray-500" />}>
             {incomingEdges.length > 0 && (
               <div className="mb-2">
-                <div className="text-xs text-slate-500 mb-1">Komt van:</div>
+                <div className="text-xs text-gray-500 mb-1">Komt van:</div>
                 <div className="space-y-1">
                   {incomingEdges.map((edge) => {
                     const sourceNode = getNodeById(edge.van);
                     return (
-                      <div key={edge.id} className="text-xs p-1.5 bg-slate-50 rounded flex items-center justify-between group">
-                        <div>
+                      <div key={edge.id} className="text-xs p-1.5 bg-gray-600 rounded flex items-center justify-between group">
+                        <div className="text-gray-300">
                           {sourceNode?.titel || edge.van}
-                          {edge.label && <span className="text-slate-400"> ({edge.label})</span>}
+                          {edge.label && <span className="text-gray-500"> ({edge.label})</span>}
                         </div>
                         {canEdit && (
                           <button
                             onClick={() => setDeleteEdgeConfirm(edge.id)}
-                            className="p-1 hover:bg-red-100 rounded text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="p-1 hover:bg-red-900/30 rounded text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                             title="Link verwijderen"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -494,20 +547,20 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
             )}
             {outgoingEdges.length > 0 && (
               <div className="mb-2">
-                <div className="text-xs text-slate-500 mb-1">Gaat naar:</div>
+                <div className="text-xs text-gray-500 mb-1">Gaat naar:</div>
                 <div className="space-y-1">
                   {outgoingEdges.map((edge) => {
                     const targetNode = getNodeById(edge.naar);
                     return (
-                      <div key={edge.id} className="text-xs p-1.5 bg-slate-50 rounded flex items-center justify-between group">
-                        <div>
+                      <div key={edge.id} className="text-xs p-1.5 bg-gray-600 rounded flex items-center justify-between group">
+                        <div className="text-gray-300">
                           {targetNode?.titel || edge.naar}
-                          {edge.label && <span className="text-slate-400"> ({edge.label})</span>}
+                          {edge.label && <span className="text-gray-500"> ({edge.label})</span>}
                         </div>
                         {canEdit && (
                           <button
                             onClick={() => setDeleteEdgeConfirm(edge.id)}
-                            className="p-1 hover:bg-red-100 rounded text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="p-1 hover:bg-red-900/30 rounded text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
                             title="Link verwijderen"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -522,7 +575,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
             {canEdit && (
               <button
                 onClick={() => onAddEdge?.(node.id)}
-                className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 px-2 py-1 hover:bg-purple-50 rounded mt-2"
+                className="flex items-center gap-1 text-xs text-purple-400 hover:text-purple-300 px-2 py-1 hover:bg-gray-500 rounded mt-2"
               >
                 <Plus className="w-3 h-3" /> Nieuwe link toevoegen
               </button>
@@ -532,13 +585,13 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
 
         {/* Registraties */}
         {node.registraties.length > 0 && (
-          <Section title="Registraties" icon={<Database className="w-4 h-4 text-slate-400" />}>
+          <Section title="Registraties" icon={<Database className="w-4 h-4 text-gray-500" />}>
             <div className="space-y-1">
               {node.registraties.map((reg, i) => (
-                <div key={i} className="text-xs p-1.5 bg-slate-50 rounded flex items-center gap-2">
+                <div key={i} className="text-xs p-1.5 bg-gray-600 rounded flex items-center gap-2">
                   <Badge>{reg.systeem}</Badge>
-                  <span className="text-slate-600">{reg.actie}</span>
-                  {reg.verplicht && <span className="text-red-500">*</span>}
+                  <span className="text-gray-400">{reg.actie}</span>
+                  {reg.verplicht && <span className="text-red-400">*</span>}
                 </div>
               ))}
             </div>
@@ -547,14 +600,14 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
 
         {/* Reglement Referenties */}
         {node.reglementReferenties.length > 0 && (
-          <Section title="Reglement" icon={<BookOpen className="w-4 h-4 text-slate-400" />}>
+          <Section title="Reglement" icon={<BookOpen className="w-4 h-4 text-gray-500" />}>
             <div className="space-y-1">
               {node.reglementReferenties.map((ref, i) => (
-                <div key={i} className="text-xs p-1.5 bg-slate-50 rounded">
-                  <div className="font-medium text-slate-700">
+                <div key={i} className="text-xs p-1.5 bg-gray-600 rounded">
+                  <div className="font-medium text-gray-300">
                     {ref.document} - Art. {ref.artikel}
                   </div>
-                  <div className="text-slate-500">{ref.omschrijving}</div>
+                  <div className="text-gray-500">{ref.omschrijving}</div>
                 </div>
               ))}
             </div>
@@ -562,7 +615,7 @@ export default function DetailPanel({ onAddEdge }: DetailPanelProps) {
         )}
 
         {/* Versie info */}
-        <div className="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-400">
+        <div className="mt-4 pt-4 border-t border-gray-700 text-xs text-gray-500">
           <div>Versie: {node.versie.versie}</div>
           <div>Status: {node.versie.status}</div>
           <div>Laatst gewijzigd: {node.versie.laatstGewijzigd}</div>

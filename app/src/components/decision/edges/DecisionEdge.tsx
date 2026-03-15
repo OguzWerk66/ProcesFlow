@@ -65,9 +65,9 @@ function DecisionEdge({
             <span
               className={`
                 px-2 py-0.5 rounded text-xs font-semibold shadow-sm
-                ${edgeType === 'ja' ? 'bg-green-100 text-green-700 border border-green-300' : ''}
-                ${edgeType === 'nee' ? 'bg-red-100 text-red-700 border border-red-300' : ''}
-                ${edgeType === 'standaard' ? 'bg-slate-100 text-slate-600 border border-slate-300' : ''}
+                ${edgeType === 'ja' ? 'bg-green-900/80 text-green-300 border border-green-700' : ''}
+                ${edgeType === 'nee' ? 'bg-red-900/80 text-red-300 border border-red-700' : ''}
+                ${edgeType === 'standaard' ? 'bg-gray-800 text-gray-300 border border-gray-600' : ''}
               `}
             >
               {label}

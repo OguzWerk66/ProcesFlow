@@ -15,11 +15,11 @@ interface DecisionNodeDialogProps {
 const NODE_TYPE_OPTIONS: DecisionNodeType[] = ['start', 'end', 'decision', 'action', 'subprocess'];
 
 const NODE_TYPE_ICONS: Record<DecisionNodeType, React.ReactNode> = {
-  start: <Play className="w-4 h-4 text-green-600" />,
-  end: <StopCircle className="w-4 h-4 text-red-600" />,
-  decision: <HelpCircle className="w-4 h-4 text-amber-600" />,
-  action: <Cog className="w-4 h-4 text-blue-600" />,
-  subprocess: <Layers className="w-4 h-4 text-purple-600" />,
+  start: <Play className="w-4 h-4 text-green-500" />,
+  end: <StopCircle className="w-4 h-4 text-red-500" />,
+  decision: <HelpCircle className="w-4 h-4 text-amber-500" />,
+  action: <Cog className="w-4 h-4 text-blue-500" />,
+  subprocess: <Layers className="w-4 h-4 text-purple-500" />,
 };
 
 function generateNodeId(type: DecisionNodeType): string {
@@ -118,14 +118,14 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
   const showVraagField = formData.type === 'decision';
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900">
+    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+      <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-100">
             {editNode ? 'Stap bewerken' : 'Nieuwe stap aanmaken'}
           </h2>
-          <button onClick={onClose} className="p-1 hover:bg-slate-100 rounded">
-            <X className="w-5 h-5 text-slate-500" />
+          <button onClick={onClose} className="p-1 hover:bg-gray-700 rounded text-gray-400 hover:text-gray-200">
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -133,7 +133,7 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
           <div className="p-6 space-y-4">
             {/* Type selectie */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-gray-400 mb-2">
                 Type stap *
               </label>
               <div className="grid grid-cols-5 gap-2">
@@ -145,13 +145,13 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
                     className={`
                       flex flex-col items-center gap-1 p-3 rounded-lg border-2 transition-all
                       ${formData.type === type
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                        ? 'border-blue-500 bg-gray-700'
+                        : 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:bg-gray-700'
                       }
                     `}
                   >
                     {NODE_TYPE_ICONS[type]}
-                    <span className="text-xs text-slate-600">{DECISION_NODE_LABELS[type]}</span>
+                    <span className="text-xs text-gray-400">{DECISION_NODE_LABELS[type]}</span>
                   </button>
                 ))}
               </div>
@@ -159,14 +159,14 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
 
             {/* Titel */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Titel *
               </label>
               <input
                 type="text"
                 value={formData.titel || ''}
                 onChange={(e) => updateField('titel', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder={
                   formData.type === 'start' ? 'Start proces' :
                   formData.type === 'end' ? 'Einde proces' :
@@ -181,13 +181,13 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
             {/* Vraag veld voor decision type */}
             {showVraagField && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-gray-400 mb-1">
                   Ja/Nee Vraag
                 </label>
                 <textarea
                   value={formData.vraag || ''}
                   onChange={(e) => updateField('vraag', e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px]"
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[80px]"
                   placeholder="Formuleer de vraag die met Ja of Nee beantwoord wordt..."
                 />
               </div>
@@ -195,13 +195,13 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
 
             {/* Beschrijving */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
+              <label className="block text-sm font-medium text-gray-400 mb-1">
                 Beschrijving
               </label>
               <textarea
                 value={formData.beschrijving || ''}
                 onChange={(e) => updateField('beschrijving', e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[60px]"
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y min-h-[60px]"
                 placeholder="Optionele extra uitleg..."
               />
             </div>
@@ -209,13 +209,13 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
             {/* Afdeling veld voor action en subprocess */}
             {showAfdelingField && (
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">
+                <label className="block text-sm font-medium text-gray-400 mb-1">
                   Verantwoordelijke afdeling
                 </label>
                 <select
                   value={formData.afdeling || ''}
                   onChange={(e) => updateField('afdeling', e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">-- Geen afdeling --</option>
                   {afdelingOpties.map(option => (
@@ -224,7 +224,7 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   De kleur van het blok wordt bepaald door de afdeling
                 </p>
               </div>
@@ -232,11 +232,11 @@ export default function DecisionNodeDialog({ isOpen, onClose, editNode, defaultT
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 bg-slate-50">
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-700 bg-gray-900">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
             >
               Annuleren
             </button>

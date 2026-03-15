@@ -15,9 +15,9 @@ interface HandleContextMenuProps {
 
 // Alleen de relevante vervolgstap opties: Beslissing, Actie, Einde
 const NODE_TYPE_CONFIG: { type: DecisionNodeType; icon: React.ReactNode; color: string; bgHover: string }[] = [
-  { type: 'decision', icon: <HelpCircle className="w-4 h-4" />, color: 'text-amber-600', bgHover: 'hover:bg-amber-50' },
-  { type: 'action', icon: <Zap className="w-4 h-4" />, color: 'text-blue-600', bgHover: 'hover:bg-blue-50' },
-  { type: 'end', icon: <StopCircle className="w-4 h-4" />, color: 'text-red-600', bgHover: 'hover:bg-red-50' },
+  { type: 'decision', icon: <HelpCircle className="w-4 h-4" />, color: 'text-amber-400', bgHover: 'hover:bg-amber-900/30' },
+  { type: 'action', icon: <Zap className="w-4 h-4" />, color: 'text-blue-400', bgHover: 'hover:bg-blue-900/30' },
+  { type: 'end', icon: <StopCircle className="w-4 h-4" />, color: 'text-red-400', bgHover: 'hover:bg-red-900/30' },
 ];
 
 function getNodeIcon(type: DecisionNodeType) {
@@ -33,12 +33,12 @@ function getNodeIcon(type: DecisionNodeType) {
 
 function getNodeColor(type: DecisionNodeType) {
   switch (type) {
-    case 'start': return 'text-green-600';
-    case 'end': return 'text-red-600';
-    case 'decision': return 'text-amber-600';
-    case 'action': return 'text-blue-600';
-    case 'subprocess': return 'text-purple-600';
-    default: return 'text-slate-600';
+    case 'start': return 'text-green-400';
+    case 'end': return 'text-red-400';
+    case 'decision': return 'text-amber-400';
+    case 'action': return 'text-blue-400';
+    case 'subprocess': return 'text-purple-400';
+    default: return 'text-gray-400';
   }
 }
 
@@ -65,15 +65,15 @@ export default function HandleContextMenu({
 
       {/* Context menu */}
       <div
-        className="fixed z-50 bg-white rounded-lg shadow-xl border border-slate-200 py-1 min-w-[280px] max-h-[400px] overflow-y-auto"
+        className="fixed z-50 bg-gray-900 rounded-lg shadow-xl border border-gray-700 py-1 min-w-[280px] max-h-[400px] overflow-y-auto"
         style={{
           left: x,
           top: y,
           transform: 'translate(-50%, 8px)'
         }}
       >
-        <div className="px-3 py-2 border-b border-slate-100">
-          <span className="text-xs font-medium text-slate-500">
+        <div className="px-3 py-2 border-b border-gray-700">
+          <span className="text-xs font-medium text-gray-500">
             {handleType === 'ja' ? 'Ja → Verbinden met' : handleType === 'nee' ? 'Nee → Verbinden met' : 'Verbinden met'}
           </span>
         </div>
@@ -81,19 +81,19 @@ export default function HandleContextMenu({
         {/* Sectie: Bestaande nodes */}
         {availableNodes.length > 0 && (
           <>
-            <div className="px-3 py-1.5 bg-slate-50 border-b border-slate-100">
-              <span className="text-xs font-medium text-slate-600">Bestaande stappen</span>
+            <div className="px-3 py-1.5 bg-gray-800 border-b border-gray-700">
+              <span className="text-xs font-medium text-gray-400">Bestaande stappen</span>
             </div>
             {availableNodes.map((node) => (
               <button
                 key={node.id}
                 onClick={() => onSelectExistingNode(node.id)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors"
+                className="w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm hover:bg-gray-800 transition-colors"
               >
                 <span className={getNodeColor(node.type)}>{getNodeIcon(node.type)}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-slate-700 font-medium truncate">{node.titel}</div>
-                  <div className="text-xs text-slate-500 truncate">{DECISION_NODE_LABELS[node.type]}</div>
+                  <div className="text-gray-200 font-medium truncate">{node.titel}</div>
+                  <div className="text-xs text-gray-500 truncate">{DECISION_NODE_LABELS[node.type]}</div>
                 </div>
               </button>
             ))}
@@ -103,8 +103,8 @@ export default function HandleContextMenu({
         {/* Sectie: Nieuwe nodes toevoegen */}
         {availableTypes.length > 0 && (
           <>
-            <div className="px-3 py-1.5 bg-slate-50 border-b border-slate-100">
-              <span className="text-xs font-medium text-slate-600">Nieuwe stap toevoegen</span>
+            <div className="px-3 py-1.5 bg-gray-800 border-b border-gray-700">
+              <span className="text-xs font-medium text-gray-400">Nieuwe stap toevoegen</span>
             </div>
             {availableTypes.map(({ type, icon, color, bgHover }) => (
               <button
@@ -113,7 +113,7 @@ export default function HandleContextMenu({
                 className={`w-full flex items-center gap-3 px-3 py-2.5 text-left text-sm ${bgHover} transition-colors`}
               >
                 <span className={color}>{icon}</span>
-                <span className="text-slate-700 font-medium">{DECISION_NODE_LABELS[type]}</span>
+                <span className="text-gray-200 font-medium">{DECISION_NODE_LABELS[type]}</span>
               </button>
             ))}
           </>

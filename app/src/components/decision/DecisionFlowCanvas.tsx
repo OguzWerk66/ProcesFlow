@@ -488,8 +488,8 @@ function DecisionFlowCanvasInner() {
         nodesDraggable={true}
         elementsSelectable={true}
       >
-        <Background color="#e2e8f0" gap={20} />
-        <Controls className="!shadow-md !border !border-slate-200" />
+        <Background color="#1e293b" gap={20} />
+        <Controls className="!shadow-md !border !border-gray-700 !bg-gray-900" />
         <MiniMap
           nodeColor={(node) => {
             // Kleur gebaseerd op node type of afdeling
@@ -507,20 +507,20 @@ function DecisionFlowCanvasInner() {
             }
             return '#2196F3';
           }}
-          maskColor="rgba(0,0,0,0.1)"
-          className="!shadow-md !border !border-slate-200"
+          maskColor="rgba(0,0,0,0.4)"
+          className="!shadow-md !border !border-gray-700 !bg-gray-900"
           pannable
           zoomable
         />
-        <Panel position="top-left" className="bg-white/90 px-3 py-2 rounded-lg shadow-sm border border-slate-200">
+        <Panel position="top-left" className="bg-gray-900/90 px-3 py-2 rounded-lg shadow-sm border border-gray-700">
           <div className="flex items-center gap-4">
-            <div className="text-sm text-slate-600">
-              <span className="font-medium">{storeNodes.length}</span> stappen
+            <div className="text-sm text-gray-400">
+              <span className="font-medium text-gray-200">{storeNodes.length}</span> stappen
             </div>
             <button
               onClick={() => undo()}
               disabled={!canUndo()}
-              className="text-xs px-2 py-1 bg-slate-100 hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed rounded text-slate-600 transition-colors flex items-center gap-1"
+              className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed rounded text-gray-300 transition-colors flex items-center gap-1"
               title="Laatste actie ongedaan maken"
             >
               <Undo size={12} />
@@ -528,13 +528,13 @@ function DecisionFlowCanvasInner() {
             </button>
             <button
               onClick={resetLayout}
-              className="text-xs px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-slate-600 transition-colors"
+              className="text-xs px-2 py-1 bg-gray-700 hover:bg-gray-600 rounded text-gray-300 transition-colors"
             >
               Reset layout
             </button>
           </div>
         </Panel>
-        <Panel position="top-right" className="bg-white/90 px-3 py-2 rounded-lg shadow-sm border border-slate-200 text-xs text-slate-500">
+        <Panel position="top-right" className="bg-gray-900/90 px-3 py-2 rounded-lg shadow-sm border border-gray-700 text-xs text-gray-500">
           Klik op een connectiepunt om een vervolgstap toe te voegen
         </Panel>
       </ReactFlow>

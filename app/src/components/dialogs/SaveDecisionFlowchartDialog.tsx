@@ -64,22 +64,22 @@ export function SaveDecisionFlowchartDialog({ isOpen, onClose }: SaveDecisionFlo
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold text-gray-900">Decision Flowchart opslaan</h2>
+      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
+      <div className="relative bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-md mx-4">
+        <div className="flex items-center justify-between p-4 border-b border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-100">Decision Flowchart opslaan</h2>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-1 hover:bg-gray-700 rounded-full transition-colors text-gray-400 hover:text-gray-200"
           >
-            <X size={20} className="text-gray-500" />
+            <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {activeFlowchartId && (
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-400">
                 Opslaan als
               </label>
               <div className="flex gap-4">
@@ -92,7 +92,7 @@ export function SaveDecisionFlowchartDialog({ isOpen, onClose }: SaveDecisionFlo
                     onChange={() => setSaveMode('update')}
                     className="text-purple-600"
                   />
-                  <span className="text-sm">Huidige overschrijven</span>
+                  <span className="text-sm text-gray-300">Huidige overschrijven</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -103,14 +103,14 @@ export function SaveDecisionFlowchartDialog({ isOpen, onClose }: SaveDecisionFlo
                     onChange={() => setSaveMode('new')}
                     className="text-purple-600"
                   />
-                  <span className="text-sm">Nieuw flowchart</span>
+                  <span className="text-sm text-gray-300">Nieuw flowchart</span>
                 </label>
               </div>
             </div>
           )}
 
           <div>
-            <label htmlFor="flowchart-naam" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="flowchart-naam" className="block text-sm font-medium text-gray-400 mb-1">
               Naam *
             </label>
             <input
@@ -122,13 +122,13 @@ export function SaveDecisionFlowchartDialog({ isOpen, onClose }: SaveDecisionFlo
                 setError('');
               }}
               placeholder="Bijv. Aanvraag Goedkeuring Flowchart"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               autoFocus
             />
           </div>
 
           <div>
-            <label htmlFor="flowchart-beschrijving" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="flowchart-beschrijving" className="block text-sm font-medium text-gray-400 mb-1">
               Beschrijving
             </label>
             <textarea
@@ -137,19 +137,19 @@ export function SaveDecisionFlowchartDialog({ isOpen, onClose }: SaveDecisionFlo
               onChange={(e) => setBeschrijving(e.target.value)}
               placeholder="Optionele beschrijving..."
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-600 text-gray-100 placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-600">{error}</p>
+            <p className="text-sm text-red-400">{error}</p>
           )}
 
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="px-4 py-2 text-gray-400 hover:bg-gray-700 rounded-lg transition-colors"
             >
               Annuleren
             </button>
