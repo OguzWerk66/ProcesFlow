@@ -5,6 +5,7 @@ import { AFDELING_KLEUREN, AFDELING_LABELS, KLANTREIS_LABELS, FASE_KLEUREN } fro
 
 export interface ProcessNodeData extends Record<string, unknown> {
   procesNode: ProcesNode;
+  presentationActive?: boolean;
   [key: string]: unknown;
 }
 
@@ -15,6 +16,7 @@ interface ProcessNodeProps {
 
 function ProcessNode({ data, selected }: ProcessNodeProps) {
   const node = data.procesNode;
+  const isActive = data.presentationActive === true;
   const borderColor = FASE_KLEUREN[node.fase] || '#3b82f6';
   const afdelingColor = AFDELING_KLEUREN[node.primaireAfdeling] || '#3b82f6';
   const [hovered, setHovered] = useState(false);
@@ -23,7 +25,6 @@ function ProcessNode({ data, selected }: ProcessNodeProps) {
 
   return (
     <div style={{ position: 'relative' }}>
-      {/* Onzichtbare handles voor edge rendering */}
       <Handle
         type="target"
         position={Position.Left}
@@ -39,8 +40,8 @@ function ProcessNode({ data, selected }: ProcessNodeProps) {
         isConnectable={false}
       />
 
-      {/* Tooltip */}
-      {hovered && tooltipText && (
+      {/* Tooltip (alleen buiten presentatiemodus) */}
+      {hovered && !isActive && tooltipText && (
         <div
           style={{
             position: 'absolute',
@@ -70,7 +71,6 @@ function ProcessNode({ data, selected }: ProcessNodeProps) {
               </ul>
             </div>
           )}
-          {/* Arrow */}
           <div
             style={{
               position: 'absolute',
@@ -85,11 +85,21 @@ function ProcessNode({ data, selected }: ProcessNodeProps) {
         </div>
       )}
 
+      {/* Node card */}
       <div
-        className={`px-3 py-2 rounded-lg shadow-sm border-2 min-w-[180px] max-w-[220px] transition-all bg-gray-800 ${
-          selected ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-950' : ''
+        style={{
+          borderColor: borderColor,
+          transform: isActive ? 'scale(1.22)' : 'scale(1)',
+          transition: 'transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.55s ease, opacity 0.4s ease',
+          boxShadow: isActive
+            ? `0 0 0 2px ${borderColor}, 0 0 32px ${borderColor}99, 0 8px 32px rgba(0,0,0,0.6)`
+            : undefined,
+          opacity: isActive ? 1 : (data.presentationActive === undefined ? 1 : 0.45),
+          zIndex: isActive ? 100 : 0,
+        }}
+        className={`px-3 py-2 rounded-lg shadow-sm border-2 min-w-[180px] max-w-[220px] bg-gray-800 ${
+          selected && !isActive ? 'ring-2 ring-blue-500 ring-offset-2 ring-offset-gray-950' : ''
         }`}
-        style={{ borderColor: borderColor }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
@@ -114,16 +124,11 @@ function ProcessNode({ data, selected }: ProcessNodeProps) {
         </p>
 
         <div className="flex items-center justify-between text-[10px]">
-          <span
-            className="font-medium"
-            style={{ color: afdelingColor }}
-          >
+          <span className="font-medium" style={{ color: afdelingColor }}>
             {AFDELING_LABELS[node.primaireAfdeling]}
           </span>
           {node.doorlooptijd && (
-            <span className="text-gray-500">
-              {node.doorlooptijd.standaard}
-            </span>
+            <span className="text-gray-500">{node.doorlooptijd.standaard}</span>
           )}
         </div>
       </div>
