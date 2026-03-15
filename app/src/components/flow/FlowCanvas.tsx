@@ -71,7 +71,7 @@ function applyDagreLayout(
 // Bouw ReactFlow nodes op — gebruik opgeslagen positie als die bestaat, anders dagre
 function buildFlowNodes(
   filteredNodes: ProcesNode[],
-  allStoreNodes: ProcesNode[],
+  _allStoreNodes: ProcesNode[],
   storeEdges: ProcesEdge[],
 ): Node[] {
   const unpositioned = filteredNodes.filter((n) => !n.position);

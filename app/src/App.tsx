@@ -67,7 +67,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
 function App() {
   const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, _setLoadError] = useState<string | null>(null);
   const [activeView, setActiveView] = useState<ActiveView>(() => {
     const last = readLastSession();
     return last?.view ?? 'procesflow';
